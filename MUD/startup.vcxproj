@@ -43,7 +43,7 @@
     <IntDir>output\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>mud</TargetName>
+    <TargetName>MUD</TargetName>
     <ExecutablePath>$(SolutionDir)libraries\GL;$(USERPROFILE)\My Documents\GitHub\MALib\MALib\bin;$(USERPROFILE)\My Documents\GitHub\MALib\MALib_sock\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(SolutionDir)libraries\GL\include;$(SolutionDir)libraries\GL\include\GL;$(USERPROFILE)\My Documents\GitHub\MALib\MALib\include;$(USERPROFILE)\My Documents\GitHub\MALib\MALib_sock\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)libraries\GL;$(USERPROFILE)\My Documents\GitHub\MALib\MALib\bin;$(USERPROFILE)\My Documents\GitHub\MALib\MALib_sock\bin;$(LibraryPath)</LibraryPath>
@@ -55,7 +55,7 @@
     <IntDir>output\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>mud</TargetName>
+    <TargetName>MUD</TargetName>
     <ExecutablePath>$(SolutionDir)libraries\GL;$(USERPROFILE)\My Documents\GitHub\MALib\MALib\bin;$(USERPROFILE)\My Documents\GitHub\MALib\MALib_sock\bin;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(SolutionDir)libraries\GL\include;$(SolutionDir)libraries\GL\include\GL;$(USERPROFILE)\My Documents\GitHub\MALib\MALib\include;$(USERPROFILE)\My Documents\GitHub\MALib\MALib_sock\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)libraries\GL;$(USERPROFILE)\My Documents\GitHub\MALib\MALib\bin;$(USERPROFILE)\My Documents\GitHub\MALib\MALib_sock\bin;$(LibraryPath)</LibraryPath>
@@ -115,12 +115,20 @@ xcopy "$(SolutionDir)data\*.*" "$(SolutionDir)bin\data\*.*" /E /Y /C</Command>
   <ItemGroup>
     <ClCompile Include="src\EntryPoint.cpp" />
     <ClCompile Include="src\MUD_app.cpp" />
+    <ClCompile Include="src\MUD_callback.cpp" />
     <ClCompile Include="src\MUD_def.cpp" />
+    <ClCompile Include="src\MUD_draw.cpp" />
+    <ClCompile Include="src\MUD_network.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MUD_app.h" />
     <ClInclude Include="include\MUD_def.h" />
+    <ClInclude Include="include\MUD_draw.h" />
+    <ClInclude Include="include\MUD_input.h" />
     <ClInclude Include="include\MUD_main.h" />
+    <ClInclude Include="include\MUD_network.h" />
+    <ClInclude Include="include\MUD_player.h" />
+    <ClInclude Include="include\MUD_callback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
