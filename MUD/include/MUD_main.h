@@ -19,9 +19,9 @@
 #include <MALib_sock.h>
 
 #include "MUD_input.h"
+#include "MUD_network.h"
 #include "MUD_player.h"
 #include "MUD_draw.h"
-#include "MUD_network.h"
 #include "MUD_def.h"
 #include "MUD_callback.h"
 #include "MUD_app.h"

@@ -9,7 +9,7 @@ void UpdateFrameCount()
 	FrameCount++;
 	if (NewPing != LastPing)
 	{
-		printf("  Frame Rate : %d\n", FrameCount);
+		//printf("  Frame Rate : %d\n", FrameCount);
 		FrameRate = FrameCount;
 		FrameCount = 0;
 		LastPing = NewPing;
@@ -76,11 +76,10 @@ void OnKey(uchar key, int x, int y)
 {
 	if (key >= ' ' && key <= '~')
 	{
-		Input::key.table[key] = false;
 	}
-	else if (key == 8) Input::key.value.backspace = false;
-	else if (key == 27) Input::key.value.escape = false;
-	else if (key == 127) Input::key.value.delet = false;
+	else if (key == 8) ;
+	else if (key == 27) ;
+	else if (key == 127) ;
 
 	OnMouseMove(x, y);
 }
@@ -88,26 +87,26 @@ void OnKeySpecial(int key, int x, int y)
 {
 	switch (key)
 	{
-	case GLUT_KEY_F1: Input::key.value.f1 = false; break;
-	case GLUT_KEY_F2: Input::key.value.f2 = false; break;
-	case GLUT_KEY_F3: Input::key.value.f3 = false; break;
-	case GLUT_KEY_F4: Input::key.value.f4 = false; break;
-	case GLUT_KEY_F5: Input::key.value.f5 = false; break;
-	case GLUT_KEY_F6: Input::key.value.f6 = false; break;
-	case GLUT_KEY_F7: Input::key.value.f7 = false; break;
-	case GLUT_KEY_F8: Input::key.value.f8 = false; break;
-	case GLUT_KEY_F9: Input::key.value.f9 = false; break;
-	case GLUT_KEY_F10: Input::key.value.f10 = false; break;
-	case GLUT_KEY_F11: Input::key.value.f11 = false; break;
-	case GLUT_KEY_F12: Input::key.value.f12 = false; break;
-	case GLUT_KEY_LEFT: Input::key.value.left = false; break;
-	case GLUT_KEY_UP: Input::key.value.up = false; break;
-	case GLUT_KEY_RIGHT: Input::key.value.right = false; break;
-	case GLUT_KEY_DOWN: Input::key.value.down = false; break;
-	case GLUT_KEY_PAGE_UP: Input::key.value.pageUp = false; break;
-	case GLUT_KEY_PAGE_DOWN: Input::key.value.pageUp = false; break;
-	case GLUT_KEY_HOME: Input::key.value.home = false; break;
-	case GLUT_KEY_INSERT: Input::key.value.insert = false; break;
+	case GLUT_KEY_F1: break;
+	case GLUT_KEY_F2: break;
+	case GLUT_KEY_F3: break;
+	case GLUT_KEY_F4: break;
+	case GLUT_KEY_F5: break;
+	case GLUT_KEY_F6: break;
+	case GLUT_KEY_F7: break;
+	case GLUT_KEY_F8: break;
+	case GLUT_KEY_F9: break;
+	case GLUT_KEY_F10: break;
+	case GLUT_KEY_F11: break;
+	case GLUT_KEY_F12: break;
+	case GLUT_KEY_LEFT: break;
+	case GLUT_KEY_UP: break;
+	case GLUT_KEY_RIGHT: break;
+	case GLUT_KEY_DOWN: break;
+	case GLUT_KEY_PAGE_UP: break;
+	case GLUT_KEY_PAGE_DOWN: break;
+	case GLUT_KEY_HOME: break;
+	case GLUT_KEY_INSERT: break;
 	default: break;
 	}
 
@@ -152,7 +151,15 @@ void OnFrame()
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	DrawSprite(0, Input::mouse.x, Input::mouse.y, 128, 128, Theta);
+	for (uint i = 0; i < Connected.length(); i++)
+	{
+		Player* player = Connected[i];
+		if (player == NULL) continue;
+
+		DrawSprite(0, player->x, player->y, 128, 128, 0.0f);
+	}
+
+	DrawSprite(0, Local->x, Local->y, 128, 128, 0.0f);
 
     glutSwapBuffers();
     glutPostRedisplay();
@@ -163,9 +170,18 @@ void OnUpdate()
 {
 	Theta += 1.0f;
 	if (Theta >= 360.0f) Theta = 0.0f;
+
+	Local->x = Input::mouse.x;
+	Local->y = Input::mouse.y;
 }
 void OnNetworkCommunication()
 {
+	if (HostingGame)
+	{
+		PollClients();
+	}
+
+	Communicate();
 }
 
 #endif

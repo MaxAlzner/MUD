@@ -97,6 +97,9 @@ void OnInitialize(int argc, char **argv)
 	glutEntryFunc(OnMouseEnter);
 
 	WindowHandle = glutGetWindow();
+	
+	Local = new Player;
+	Connected.resize(8);
 }
 void OnUninitialize()
 {
