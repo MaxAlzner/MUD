@@ -7,6 +7,7 @@ bool Visible = false;
 int WindowHandle = -1;
 uint FrameCount = 0;
 uint FrameRate = 0;
+float DeltaTime = 0.0f;
 float Theta = 0.0f;
 float AspectRatio = 4.0f / 3.0f;
 MALib::RECT ScreenRect(800, 600);
@@ -19,6 +20,7 @@ string IPAddress = 0;
 bool HostingGame = false;
 
 MouseState Input::mouse;
+KeyState Input::key;
 
 uint ShaderProgram = 0;
 uint SpriteBuffer = 0;

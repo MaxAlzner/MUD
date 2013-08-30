@@ -38,6 +38,8 @@ void HostGame()
 		printf("  Host IP : %s\n", IPAddress);
 		MALib::SOCK_CreateClientBuffer(&Clients, MAX_CLIENTS);
 		MALib::SOCK_AcceptConnections(Clients, MAX_CLIENTS);
+
+		Local->id = 1;
 	}
 	printf("\n");
 	//_getch();
@@ -62,7 +64,12 @@ void ConnectToGame()
 			continue;
 		}
 		
+		CONNECTED_PACKET connected;
+		MALib::SOCK_Receive(&connected, sizeof(CONNECTED_PACKET));
+		Local->id = connected.id;
+		
 		printf("  Connected to host\n");
+		printf("  I am player %d\n", Local->id);
 		printf("\n");
 		break;
 	}
@@ -85,25 +92,21 @@ void AddToState(GAME_PACKET& state, PLAYER_PACKET& player)
 	switch (player.id)
 	{
 	case 1:
-		player.id = 1;
 		state.players._1 = player;
 		break;
 	case 2:
-		player.id = 2;
 		state.players._2 = player;
 		break;
 	case 3:
-		player.id = 3;
 		state.players._3 = player; 
 		break;
 	case 4:
-		player.id = 4;
 		state.players._4 = player;
 		break;
 	default: break;
 	}
 }
-void GetSlotFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet)
+void GetPlayerFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet)
 {
 	uint index = slot - 1;
 	if (packet == NULL || index > MAX_CLIENTS) return;
@@ -113,10 +116,10 @@ void GetSlotFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet)
 }
 void BuildState(GAME_PACKET& state)
 {
-	if (state.players._1.id > 0) state.connected++;
-	if (state.players._2.id > 0) state.connected++;
-	if (state.players._3.id > 0) state.connected++;
-	if (state.players._4.id > 0) state.connected++;
+	if (state.players._1.id == 1) state.connected++;
+	if (state.players._2.id == 2) state.connected++;
+	if (state.players._3.id == 3) state.connected++;
+	if (state.players._4.id == 4) state.connected++;
 }
 
 void PollClients()
@@ -130,6 +133,11 @@ void PollClients()
 			AddPlayer(sock);
 			AcceptedClients++;
 			printf("  Player connected\n");
+			
+			CONNECTED_PACKET connected;
+			connected.id = AcceptedClients + 1;
+			MALib::SOCK_BindConnection(sock);
+			MALib::SOCK_Send(&connected, sizeof(CONNECTED_PACKET));
 		}
 	}
 }
@@ -152,14 +160,16 @@ void Communicate()
 			player->applyPacket(slot);
 			AddToState(state, slot);
 		}
-
+		
+		AddToState(state, sending);
 		BuildState(state);
 
 		for (uint i = 0; i < Connected.length(); i++)
 		{
 			Player* player = Connected[i];
 			if (player == NULL || player->sock == NULL) continue;
-
+			
+			MALib::SOCK_BindConnection(player->sock);
 			MALib::SOCK_Send(&state, sizeof(GAME_PACKET));
 		}
 	}
@@ -169,16 +179,19 @@ void Communicate()
 		MALib::SOCK_Receive(&state, sizeof(GAME_PACKET));
 
 		PLAYER_PACKET packet;
-		GetSlotFromState(state, Local->lastPacket.id, &packet);
-		Local->applyPacket(packet);
+		GetPlayerFromState(state, Local->id, &packet);
 		
+		for (uint i = Connected.length(); i < uint(state.connected) - 1; i++) Connected.add(new Player);
+
 		PLAYER_PACKET* players = (PLAYER_PACKET*)&state.players;
-		for (uint i = state.connected; i < MAX_CLIENTS; i++)
+		uint k = 0;
+		for (uint i = 0; i < uint(state.connected); i++)
 		{
-			Player* player = new Player;
 			PLAYER_PACKET packet = players[i];
+			if (packet == sending) continue;
+			Player* player = Connected[k];
 			player->applyPacket(packet);
-			Connected.add(player);
+			k++;
 		}
 	}
 }

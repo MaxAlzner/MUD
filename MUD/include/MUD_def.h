@@ -9,6 +9,7 @@ extern void UpdateFrameCount();
 namespace Input
 {
 	extern MouseState mouse;
+	extern KeyState key;
 }
 
 extern bool AppRunning;
@@ -16,9 +17,12 @@ extern bool Visible;
 extern int WindowHandle;
 extern uint FrameCount;
 extern uint FrameRate;
+extern float DeltaTime;
 extern float Theta;
 extern float AspectRatio;
 extern MALib::RECT ScreenRect;
+
+extern POINT Camera;
 
 extern Player* Local;
 extern MALib::ARRAY<Player*> Connected;

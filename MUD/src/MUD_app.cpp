@@ -92,7 +92,9 @@ void OnInitialize(int argc, char **argv)
 	glutMouseFunc(OnMouseButton);
 	glutPassiveMotionFunc(OnMouseMove);
 	glutKeyboardFunc(OnKey);
+	glutKeyboardFunc(OnKeyUp);
 	glutSpecialFunc(OnKeySpecial);
+	glutSpecialUpFunc(OnKeySpecialUp);
 	glutVisibilityFunc(OnVisibility);
 	glutEntryFunc(OnMouseEnter);
 
@@ -100,6 +102,7 @@ void OnInitialize(int argc, char **argv)
 	
 	Local = new Player;
 	Connected.resize(8);
+	Local->rect.move(256, 128);
 }
 void OnUninitialize()
 {

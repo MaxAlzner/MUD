@@ -5,9 +5,9 @@
 string VertexShader = 
 	"#version 120\n"
 
-	"in vec4 vertex;\n"
+	"attribute vec4 vertex;\n"
 
-	"out vec2 tex_coord;\n"
+	"varying vec2 tex_coord;\n"
 
 	"uniform vec2 screen;\n"
 	"uniform vec2 position;\n"
@@ -29,22 +29,23 @@ string VertexShader =
 string FragmentShader = 
 	"#version 120\n"
 
-	"in vec2 tex_coord;\n"
+	"varying vec2 tex_coord;\n"
 
 	"uniform vec3 color;\n"
 	
 	"void main()\n"
 	"{\n"
 	"	float v = length((tex_coord * 2.0) - 1.0);\n"
-	//"	if (v > 1.0) discard;\n"
+	"	if (v > 1.0) discard;\n"
 
-	"	v = ((1.0 - v) * 0.5) + 0.5;\n"
+	"	v = ((1.0 - v) * 0.25) + 0.75;\n"
 	"	gl_FragColor = vec4(v);\n"
 	"}\n";
 
 void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotation)
 {
-	glUniform2f(Uniforms.position, float(x), float(y));
+	MALib::RECT r = ScreenRect;
+	glUniform2f(Uniforms.position, float(x - ScreenRect.x0), float(y - ScreenRect.y0));
 	glUniform2f(Uniforms.dimensions, float(width), float(height));
 	glUniform1f(Uniforms.rotation, MALib::ToRadians(rotation));
 	glDrawArrays(GL_TRIANGLES, 0, 6);

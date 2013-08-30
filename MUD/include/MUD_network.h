@@ -1,11 +1,25 @@
 #ifndef MUD_NETWORK_H_
 #define MUD_NETWORK_H_
 
+typedef struct CONNECTED_PACKET
+{
+	CONNECTED_PACKET()
+	{
+		memset(this, 0, sizeof(CONNECTED_PACKET));
+	}
+
+	__int32 id;
+
+} CONNECTED_PACKET;
 typedef struct PLAYER_PACKET
 {
 	PLAYER_PACKET()
 	{
 		sizeof(this, 0, sizeof(PLAYER_PACKET));
+	}
+	bool operator==(const PLAYER_PACKET& other)
+	{
+		return this->id == other.id && this->position.x == other.position.x && this->position.y == other.position.y;
 	}
 
 	struct
@@ -47,7 +61,7 @@ extern void Disconnect();
 
 extern void AddToState(GAME_PACKET& state, PLAYER_PACKET& player);
 extern void BuildState(GAME_PACKET& state);
-extern void GetSlotFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet);
+extern void GetPlayerFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet);
 
 extern void PollClients();
 extern void Communicate();

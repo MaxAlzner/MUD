@@ -30,6 +30,7 @@ ulong __stdcall UpdateThread(void* parameter)
 		int NewPing = glutGet(GLUT_ELAPSED_TIME);
 		if (NewPing - LastPing >= FRAMES_PER_SECOND)
 		{
+			DeltaTime = float(NewPing - LastPing) / 1000.0f;
 			OnUpdate();
 			LastPing = NewPing;
 		}
@@ -74,12 +75,13 @@ void OnMouseMove(int x, int y)
 }
 void OnKey(uchar key, int x, int y)
 {
-	if (key >= ' ' && key <= '~')
-	{
-	}
-	else if (key == 8) ;
-	else if (key == 27) ;
-	else if (key == 127) ;
+	Input::key.pressed[key] = true;
+
+	OnMouseMove(x, y);
+}
+void OnKeyUp(uchar key, int x, int y)
+{
+	Input::key.pressed[key] = false;
 
 	OnMouseMove(x, y);
 }
@@ -99,10 +101,39 @@ void OnKeySpecial(int key, int x, int y)
 	case GLUT_KEY_F10: break;
 	case GLUT_KEY_F11: break;
 	case GLUT_KEY_F12: break;
-	case GLUT_KEY_LEFT: break;
-	case GLUT_KEY_UP: break;
-	case GLUT_KEY_RIGHT: break;
-	case GLUT_KEY_DOWN: break;
+	case GLUT_KEY_LEFT: Input::key.pressed[KEY_LEFT] = true; break;
+	case GLUT_KEY_UP: Input::key.pressed[KEY_UP] = true; break;
+	case GLUT_KEY_RIGHT: Input::key.pressed[KEY_RIGHT] = true; break;
+	case GLUT_KEY_DOWN: Input::key.pressed[KEY_DOWN] = true; break;
+	case GLUT_KEY_PAGE_UP: break;
+	case GLUT_KEY_PAGE_DOWN: break;
+	case GLUT_KEY_HOME: break;
+	case GLUT_KEY_INSERT: break;
+	default: break;
+	}
+
+	OnMouseMove(x, y);
+}
+void OnKeySpecialUp(int key, int x, int y)
+{
+	switch (key)
+	{
+	case GLUT_KEY_F1: break;
+	case GLUT_KEY_F2: break;
+	case GLUT_KEY_F3: break;
+	case GLUT_KEY_F4: break;
+	case GLUT_KEY_F5: break;
+	case GLUT_KEY_F6: break;
+	case GLUT_KEY_F7: break;
+	case GLUT_KEY_F8: break;
+	case GLUT_KEY_F9: break;
+	case GLUT_KEY_F10: break;
+	case GLUT_KEY_F11: break;
+	case GLUT_KEY_F12: break;
+	case GLUT_KEY_LEFT: Input::key.pressed[KEY_LEFT] = false; break;
+	case GLUT_KEY_UP: Input::key.pressed[KEY_UP] = false; break;
+	case GLUT_KEY_RIGHT: Input::key.pressed[KEY_RIGHT] = false; break;
+	case GLUT_KEY_DOWN: Input::key.pressed[KEY_DOWN] = false; break;
 	case GLUT_KEY_PAGE_UP: break;
 	case GLUT_KEY_PAGE_DOWN: break;
 	case GLUT_KEY_HOME: break;
@@ -135,7 +166,8 @@ void OnReshape(int width, int height)
 	if (width > height) height = int((1.0f / AspectRatio) * float(width));
 	else width = int(AspectRatio * float(height));
 
-	ScreenRect = MALib::RECT(width, height);
+	//ScreenRect = MALib::RECT(width, height);
+	ScreenRect.resize(width, height);
 
 	glUniform2f(Uniforms.screen, float(width), float(height));
 	glutReshapeWindow(ScreenRect.width, ScreenRect.height);
@@ -156,10 +188,10 @@ void OnFrame()
 		Player* player = Connected[i];
 		if (player == NULL) continue;
 
-		DrawSprite(0, player->x, player->y, 128, 128, 0.0f);
+		DrawSprite(0, player->rect.cx, player->rect.cy, player->rect.width, player->rect.height, 0.0f);
 	}
 
-	DrawSprite(0, Local->x, Local->y, 128, 128, 0.0f);
+	DrawSprite(0, Local->rect.cx, Local->rect.cy, Local->rect.width, Local->rect.height, 0.0f);
 
     glutSwapBuffers();
     glutPostRedisplay();
@@ -168,11 +200,20 @@ void OnFrame()
 }
 void OnUpdate()
 {
+	if (Input::key.pressed[KEY_ESCAPE]) AppRunning = false;
+
 	Theta += 1.0f;
 	if (Theta >= 360.0f) Theta = 0.0f;
 
-	Local->x = Input::mouse.x;
-	Local->y = Input::mouse.y;
+	int dx = 0;
+	int dy = 0;
+	if (Input::key.pressed[KEY_LEFT]) dx--;
+	if (Input::key.pressed[KEY_RIGHT]) dx++;
+	if (Input::key.pressed[KEY_UP]) dy++;
+	if (Input::key.pressed[KEY_DOWN]) dy--;
+
+	Local->rect.move(Local->rect.cx + dx, Local->rect.cy + dy);
+	ScreenRect.move(Local->rect.cx, Local->rect.cy);
 }
 void OnNetworkCommunication()
 {

@@ -7,11 +7,13 @@ public:
 	Player();
 	~Player();
 
+	void draw();
+
 	void createPacket(PLAYER_PACKET& packet);
 	void applyPacket(PLAYER_PACKET& packet);
 
-	uint x;
-	uint y;
+	uint id;
+	MALib::RECT rect;
 
 	MALib::SOCKHANDLE* sock;
 	PLAYER_PACKET lastPacket;

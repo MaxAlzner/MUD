@@ -20,6 +20,7 @@
 
 #include "MUD_input.h"
 #include "MUD_network.h"
+#include "MUD_dungeon.h"
 #include "MUD_player.h"
 #include "MUD_draw.h"
 #include "MUD_def.h"

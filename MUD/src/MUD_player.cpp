@@ -5,20 +5,27 @@
 Player::Player()
 {
 	memset(this, 0, sizeof(Player));
+	this->rect.resize(128, 128);
 }
 Player::~Player()
 {
 }
 
+void Player::draw()
+{
+}
+
 void Player::createPacket(PLAYER_PACKET& packet)
 {
-	packet.position.x = this->x;
-	packet.position.y = this->y;
+	packet.position.x = this->rect.cx;
+	packet.position.y = this->rect.cy;
+	packet.id = this->id;
+	this->lastPacket = packet;
 }
 void Player::applyPacket(PLAYER_PACKET& packet)
 {
-	this->x = packet.position.x;
-	this->y = packet.position.y;
+	this->rect.cx = packet.position.x;
+	this->rect.cy = packet.position.y;
 }
 
 void AddPlayer(MALib::SOCKHANDLE* sock)
