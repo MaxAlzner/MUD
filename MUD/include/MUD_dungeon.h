@@ -10,6 +10,7 @@ public:
 	void draw();
 
 	MALib::RECT rect;
+	MALib::COLOR color;
 };
 
 #endif

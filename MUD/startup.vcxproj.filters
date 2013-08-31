@@ -36,9 +36,6 @@
     <ClInclude Include="include\MUD_network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MUD_input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\MUD_dungeon.h">
       <Filter>Header Files</Filter>
     </ClInclude>

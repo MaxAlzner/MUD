@@ -127,7 +127,6 @@ xcopy "$(SolutionDir)data\*.*" "$(SolutionDir)bin\data\*.*" /E /Y /C</Command>
     <ClInclude Include="include\MUD_def.h" />
     <ClInclude Include="include\MUD_draw.h" />
     <ClInclude Include="include\MUD_dungeon.h" />
-    <ClInclude Include="include\MUD_input.h" />
     <ClInclude Include="include\MUD_main.h" />
     <ClInclude Include="include\MUD_network.h" />
     <ClInclude Include="include\MUD_player.h" />

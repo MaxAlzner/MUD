@@ -1,11 +1,11 @@
 #ifndef MUD_NETWORK_H_
 #define MUD_NETWORK_H_
 
-typedef struct CONNECTED_PACKET
+typedef struct START_PACKET
 {
-	CONNECTED_PACKET()
+	START_PACKET()
 	{
-		memset(this, 0, sizeof(CONNECTED_PACKET));
+		memset(this, 0, sizeof(START_PACKET));
 	}
 
 	__int32 id;
@@ -64,6 +64,8 @@ extern void BuildState(GAME_PACKET& state);
 extern void GetPlayerFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet);
 
 extern void PollClients();
-extern void Communicate();
+extern void StartCommunication();
+extern void SendCommunicate();
+extern void ReceiveCommunicate();
 
 #endif

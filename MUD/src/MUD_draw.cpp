@@ -28,26 +28,68 @@ string VertexShader =
 	"}\n";
 string FragmentShader = 
 	"#version 120\n"
+	
+	"#define SHAPE_CIRCLE 1\n"
+	"#define SHAPE_BOX 2\n"
 
 	"varying vec2 tex_coord;\n"
 
-	"uniform vec3 color;\n"
-	
-	"void main()\n"
+	"uniform sampler2D color_map;\n"
+	"uniform vec4 color;\n"
+
+	"uniform int shape;\n"
+
+	"void circle()\n"
 	"{\n"
 	"	float v = length((tex_coord * 2.0) - 1.0);\n"
 	"	if (v > 1.0) discard;\n"
-
 	"	v = ((1.0 - v) * 0.25) + 0.75;\n"
-	"	gl_FragColor = vec4(v);\n"
+	"	gl_FragColor = vec4(v) * color;\n"
+	"}\n"
+	"void box()\n"
+	"{\n"
+	"	gl_FragColor = color;\n"
+	"}\n"
+	
+	"void main()\n"
+	"{\n"
+	"	switch (shape)\n"
+	"	{\n"
+	"	case SHAPE_CIRCLE: circle(); break;\n"
+	"	case SHAPE_BOX: box(); break;\n"
+
+	"	default: break;\n"
+	"	}\n"
 	"}\n";
 
-void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotation)
+void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotation, MALib::COLOR color)
 {
-	MALib::RECT r = ScreenRect;
+	glUniform1i(Uniforms.color_map, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, sprite);
+
 	glUniform2f(Uniforms.position, float(x - ScreenRect.x0), float(y - ScreenRect.y0));
 	glUniform2f(Uniforms.dimensions, float(width), float(height));
 	glUniform1f(Uniforms.rotation, MALib::ToRadians(rotation));
+	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
+	glUniform1i(Uniforms.shape, 2);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+void DrawCircle(int x, int y, uint radius, MALib::COLOR color)
+{
+	glUniform2f(Uniforms.position, float(x - ScreenRect.x0), float(y - ScreenRect.y0));
+	glUniform2f(Uniforms.dimensions, float(radius), float(radius));
+	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
+	glUniform1i(Uniforms.shape, 1);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+void DrawBox(int x, int y, uint width, uint height, float rotation, MALib::COLOR color)
+{
+	glUniform2f(Uniforms.position, float(x - ScreenRect.x0), float(y - ScreenRect.y0));
+	glUniform2f(Uniforms.dimensions, float(width), float(height));
+	glUniform1f(Uniforms.rotation, MALib::ToRadians(rotation));
+	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
+	glUniform1i(Uniforms.shape, 2);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

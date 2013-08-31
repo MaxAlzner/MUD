@@ -18,7 +18,7 @@
 #include <MALib.h>
 #include <MALib_sock.h>
 
-#include "MUD_input.h"
+//#include "MUD_input.h"
 #include "MUD_network.h"
 #include "MUD_dungeon.h"
 #include "MUD_player.h"

@@ -64,8 +64,8 @@ void ConnectToGame()
 			continue;
 		}
 		
-		CONNECTED_PACKET connected;
-		MALib::SOCK_Receive(&connected, sizeof(CONNECTED_PACKET));
+		START_PACKET connected;
+		MALib::SOCK_Receive(&connected, sizeof(START_PACKET));
 		Local->id = connected.id;
 		
 		printf("  Connected to host\n");
@@ -134,21 +134,44 @@ void PollClients()
 			AcceptedClients++;
 			printf("  Player connected\n");
 			
-			CONNECTED_PACKET connected;
+			START_PACKET connected;
 			connected.id = AcceptedClients + 1;
 			MALib::SOCK_BindConnection(sock);
-			MALib::SOCK_Send(&connected, sizeof(CONNECTED_PACKET));
+			MALib::SOCK_Send(&connected, sizeof(START_PACKET));
 		}
 	}
 }
-void Communicate()
+void StartCommunication()
 {
-	GAME_PACKET state;
-	PLAYER_PACKET sending;
-	Local->createPacket(sending);
-
+}
+void SendCommunicate()
+{
 	if (HostingGame)
 	{
+		for (uint i = 0; i < Connected.length(); i++)
+		{
+			Player* player = Connected[i];
+			if (player == NULL || player->sock == NULL) continue;
+			
+			MALib::SOCK_BindConnection(player->sock);
+			MALib::SOCK_Send(&StatePacket, sizeof(GAME_PACKET));
+		}
+	}
+	else
+	{
+		PLAYER_PACKET local;
+		Local->createPacket(local);
+
+		MALib::SOCK_Send(&local, sizeof(PLAYER_PACKET));
+	}
+}
+void ReceiveCommunicate()
+{
+	if (HostingGame)
+	{
+		StatePacket = GAME_PACKET();
+		PLAYER_PACKET local;
+		Local->createPacket(local);
 		for (uint i = 0; i < Connected.length(); i++)
 		{
 			Player* player = Connected[i];
@@ -158,37 +181,28 @@ void Communicate()
 			MALib::SOCK_BindConnection(player->sock);
 			MALib::SOCK_Receive(&slot, sizeof(PLAYER_PACKET));
 			player->applyPacket(slot);
-			AddToState(state, slot);
+			AddToState(StatePacket, slot);
 		}
 		
-		AddToState(state, sending);
-		BuildState(state);
-
-		for (uint i = 0; i < Connected.length(); i++)
-		{
-			Player* player = Connected[i];
-			if (player == NULL || player->sock == NULL) continue;
-			
-			MALib::SOCK_BindConnection(player->sock);
-			MALib::SOCK_Send(&state, sizeof(GAME_PACKET));
-		}
+		AddToState(StatePacket, local);
+		BuildState(StatePacket);
 	}
 	else
 	{
-		MALib::SOCK_Send(&sending, sizeof(PLAYER_PACKET));
-		MALib::SOCK_Receive(&state, sizeof(GAME_PACKET));
-
-		PLAYER_PACKET packet;
-		GetPlayerFromState(state, Local->id, &packet);
+		MALib::SOCK_Receive(&StatePacket, sizeof(GAME_PACKET));
 		
-		for (uint i = Connected.length(); i < uint(state.connected) - 1; i++) Connected.add(new Player);
+		PLAYER_PACKET local;
+		GetPlayerFromState(StatePacket, Local->id, &local);
 
-		PLAYER_PACKET* players = (PLAYER_PACKET*)&state.players;
+		for (uint i = Connected.length(); i < uint(StatePacket.connected) - 1; i++) Connected.add(new Player);
+
+		PLAYER_PACKET* players = (PLAYER_PACKET*)&StatePacket.players;
 		uint k = 0;
-		for (uint i = 0; i < uint(state.connected); i++)
+		for (uint i = 0; i < uint(StatePacket.connected); i++)
 		{
+			if (k >= Connected.length()) break;
 			PLAYER_PACKET packet = players[i];
-			if (packet == sending) continue;
+			if (packet == local) continue;
 			Player* player = Connected[k];
 			player->applyPacket(packet);
 			k++;

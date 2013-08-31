@@ -6,12 +6,6 @@
 
 extern void UpdateFrameCount();
 
-namespace Input
-{
-	extern MouseState mouse;
-	extern KeyState key;
-}
-
 extern bool AppRunning;
 extern bool Visible;
 extern int WindowHandle;
@@ -24,8 +18,10 @@ extern MALib::RECT ScreenRect;
 
 extern POINT Camera;
 
+extern Dungeon* Map;
 extern Player* Local;
 extern MALib::ARRAY<Player*> Connected;
+extern GAME_PACKET StatePacket;
 
 extern uint Port;
 extern string IPAddress;

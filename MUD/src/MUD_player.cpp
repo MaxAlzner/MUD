@@ -6,6 +6,7 @@ Player::Player()
 {
 	memset(this, 0, sizeof(Player));
 	this->rect.resize(128, 128);
+	this->color = MALib::COLOR(1.0f, 0.25f, 0.1f);
 }
 Player::~Player()
 {
@@ -13,6 +14,7 @@ Player::~Player()
 
 void Player::draw()
 {
+	DrawCircle(this->rect.cx, this->rect.cy, this->rect.width, this->color);
 }
 
 void Player::createPacket(PLAYER_PACKET& packet)

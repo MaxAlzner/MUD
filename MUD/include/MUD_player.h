@@ -14,6 +14,7 @@ public:
 
 	uint id;
 	MALib::RECT rect;
+	MALib::COLOR color;
 
 	MALib::SOCKHANDLE* sock;
 	PLAYER_PACKET lastPacket;

@@ -7,11 +7,16 @@ struct UniformLocations
 	int position;
 	int dimensions;
 	int rotation;
+	int color_map;
+	int color;
+	int shape;
 };
 
 extern string VertexShader;
 extern string FragmentShader;
 
-extern void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotation);
+extern void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotation, MALib::COLOR color);
+extern void DrawCircle(int x, int y, uint radius, MALib::COLOR color);
+extern void DrawBox(int x, int y, uint width, uint height, float rotation, MALib::COLOR color);
 
 #endif
