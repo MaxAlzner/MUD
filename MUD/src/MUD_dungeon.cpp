@@ -14,7 +14,7 @@ Dungeon::~Dungeon()
 
 void Dungeon::draw()
 {
-	DrawBox(this->rect.cx, this->rect.cy, this->rect.width, this->rect.height, 0.0f, this->color);
+	DrawRoundedBox(this->rect.cx, this->rect.cy, this->rect.width, this->rect.height, 0.2f, 0.0f, this->color);
 }
 
 #endif

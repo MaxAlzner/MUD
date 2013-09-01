@@ -96,6 +96,7 @@ void OnInitialize(int argc, char **argv)
 	Uniforms.rotation = glGetUniformLocation(ShaderProgram, "rotation");
 	Uniforms.color_map = glGetUniformLocation(ShaderProgram, "color_map");
 	Uniforms.color = glGetUniformLocation(ShaderProgram, "color");
+	Uniforms.borderRadius = glGetUniformLocation(ShaderProgram, "borderRadius");
 	Uniforms.shape = glGetUniformLocation(ShaderProgram, "shape");
 
 	glutDisplayFunc(OnFrame);

@@ -31,11 +31,13 @@ string FragmentShader =
 	
 	"#define SHAPE_CIRCLE 1\n"
 	"#define SHAPE_BOX 2\n"
+	"#define SHAPE_ROUNDED_BOX 3\n"
 
 	"varying vec2 tex_coord;\n"
 
 	"uniform sampler2D color_map;\n"
 	"uniform vec4 color;\n"
+	"uniform float borderRadius;\n"
 
 	"uniform int shape;\n"
 
@@ -50,6 +52,13 @@ string FragmentShader =
 	"{\n"
 	"	gl_FragColor = color;\n"
 	"}\n"
+	"void roundedBox()\n"
+	"{\n"
+	"	if (tex_coord.x <= borderRadius || tex_coord.y <= borderRadius) discard;\n"
+	"	float v = length((tex_coord * 2.0) - 1.0);\n"
+	"	v = ((1.0 - v) * 0.25) + 0.75;\n"
+	"	gl_FragColor = color;\n"
+	"}\n"
 	
 	"void main()\n"
 	"{\n"
@@ -57,6 +66,7 @@ string FragmentShader =
 	"	{\n"
 	"	case SHAPE_CIRCLE: circle(); break;\n"
 	"	case SHAPE_BOX: box(); break;\n"
+	"	case SHAPE_ROUNDED_BOX: roundedBox(); break;\n"
 
 	"	default: break;\n"
 	"	}\n"
@@ -89,6 +99,16 @@ void DrawBox(int x, int y, uint width, uint height, float rotation, MALib::COLOR
 	glUniform2f(Uniforms.dimensions, float(width), float(height));
 	glUniform1f(Uniforms.rotation, MALib::ToRadians(rotation));
 	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
+	glUniform1i(Uniforms.shape, 2);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+void DrawRoundedBox(int x, int y, uint width, uint height, float borderRadius, float rotation, MALib::COLOR color)
+{
+	glUniform2f(Uniforms.position, float(x - ScreenRect.x0), float(y - ScreenRect.y0));
+	glUniform2f(Uniforms.dimensions, float(width), float(height));
+	glUniform1f(Uniforms.rotation, MALib::ToRadians(rotation));
+	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
+	glUniform1f(Uniforms.borderRadius, borderRadius);
 	glUniform1i(Uniforms.shape, 2);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
