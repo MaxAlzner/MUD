@@ -1,11 +1,11 @@
 #include "../include/MUD_main.h"
 
 #ifdef MUD_DEF_H_
-
+/*
 MALib::MouseInput MALib::INPUT::MOUSE;
 MALib::KeyInput MALib::INPUT::KEY;
 MALib::GamepadInput MALib::INPUT::GAMEPAD;
-
+*/
 bool AppRunning = true;
 bool Visible = false;
 int WindowHandle = -1;

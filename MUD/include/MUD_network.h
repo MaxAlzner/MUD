@@ -29,6 +29,7 @@ typedef struct PLAYER_PACKET
 	} position;
 
 	__int32 id;
+	__int8 stillPlaying;
 	
 } PLAYER_PACKET;
 typedef struct GAME_PACKET

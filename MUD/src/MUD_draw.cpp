@@ -46,7 +46,7 @@ string FragmentShader =
 	"	float v = length((tex_coord * 2.0) - 1.0);\n"
 	"	if (v > 1.0) discard;\n"
 	"	v = ((1.0 - v) * 0.25) + 0.75;\n"
-	"	gl_FragColor = vec4(v) * color;\n"
+	"	gl_FragColor = color * v;\n"
 	"}\n"
 	"void box()\n"
 	"{\n"
@@ -54,10 +54,11 @@ string FragmentShader =
 	"}\n"
 	"void roundedBox()\n"
 	"{\n"
-	"	if (tex_coord.x <= borderRadius || tex_coord.y <= borderRadius) discard;\n"
-	"	float v = length((tex_coord * 2.0) - 1.0);\n"
+	"	vec2 c = (tex_coord * 2.0) - 1.0;\n"
+	"	float v = length(c);\n"
+
 	"	v = ((1.0 - v) * 0.25) + 0.75;\n"
-	"	gl_FragColor = color;\n"
+	"	gl_FragColor = color * v;\n"
 	"}\n"
 	
 	"void main()\n"
@@ -88,7 +89,7 @@ void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotati
 void DrawCircle(int x, int y, uint radius, MALib::COLOR color)
 {
 	glUniform2f(Uniforms.position, float(x - ScreenRect.x0), float(y - ScreenRect.y0));
-	glUniform2f(Uniforms.dimensions, float(radius), float(radius));
+	glUniform2f(Uniforms.dimensions, float(radius) * 2.0f, float(radius) * 2.0f);
 	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
 	glUniform1i(Uniforms.shape, 1);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -109,7 +110,7 @@ void DrawRoundedBox(int x, int y, uint width, uint height, float borderRadius, f
 	glUniform1f(Uniforms.rotation, MALib::ToRadians(rotation));
 	glUniform4f(Uniforms.color, color.r, color.g, color.b, color.a);
 	glUniform1f(Uniforms.borderRadius, borderRadius);
-	glUniform1i(Uniforms.shape, 2);
+	glUniform1i(Uniforms.shape, 3);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

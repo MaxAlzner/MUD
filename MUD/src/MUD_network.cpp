@@ -31,7 +31,7 @@ void HostGame()
 	{
 		AppRunning = false;
 		printf("  Failed to create host\n");
-		printf("  error : %d\n", MALib::SOCK_CheckError());
+		printf("    error : %d\n", MALib::SOCK_CheckError());
 	}
 	else
 	{
@@ -39,7 +39,7 @@ void HostGame()
 		MALib::SOCK_CreateClientBuffer(&Clients, MAX_CLIENTS);
 		MALib::SOCK_AcceptConnections(Clients, MAX_CLIENTS);
 
-		Local->id = 1;
+		OnHostInitialize();
 	}
 	printf("\n");
 	//_getch();
@@ -71,18 +71,26 @@ void ConnectToGame()
 		printf("  Connected to host\n");
 		printf("  I am player %d\n", Local->id);
 		printf("\n");
+
+		OnClientInitialize();
 		break;
 	}
 }
 void Disconnect()
 {
-	MALib::SOCK_Disconnect();
 	if (HostingGame)
 	{
+		MALib::SOCK_Disconnect();
 		MALib::SOCK_DestroyClientBuffer(&Clients);
 	}
 	else
 	{
+		PLAYER_PACKET packet;
+		Local->createPacket(packet);
+		packet.stillPlaying = 0;
+		MALib::SOCK_Send(&packet, sizeof(PLAYER_PACKET));
+		
+		MALib::SOCK_Disconnect();
 		delete [] IPAddress;
 	}
 }

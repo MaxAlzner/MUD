@@ -19,6 +19,9 @@ extern void OnKeySpecialUp(int key, int x, int y);
 extern void OnVisibility(int state);
 extern void OnMouseEnter(int state);
 extern void OnReshape(int width, int height);
+
+extern void OnHostInitialize();
+extern void OnClientInitialize();
 extern void OnFrame();
 extern void OnUpdate();
 

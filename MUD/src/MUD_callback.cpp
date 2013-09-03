@@ -21,7 +21,6 @@ void FrameTimer(int id)
 	glutPostRedisplay();
 	if (!AppRunning)
 	{
-		glutDestroyWindow(WindowHandle);
 		exit(0);
 	}
 }
@@ -94,9 +93,9 @@ void OnMouseButton(int button, int state, int x, int y)
 
 	switch (button)
 	{
-	case GLUT_LEFT_BUTTON: MALib::INPUT::MOUSE.left = value; break;
-	case GLUT_RIGHT_BUTTON: MALib::INPUT::MOUSE.right = value; break;
-	case GLUT_MIDDLE_BUTTON: MALib::INPUT::MOUSE.middle = value; break;
+	case GLUT_LEFT_BUTTON: MALib::INPUT::OnMouseButton(MALib::BUTTON_LEFT, value); break;
+	case GLUT_RIGHT_BUTTON: MALib::INPUT::OnMouseButton(MALib::BUTTON_RIGHT, value); break;
+	case GLUT_MIDDLE_BUTTON: MALib::INPUT::OnMouseButton(MALib::BUTTON_MIDDLE, value); break;
 	default: break;
 	}
 
@@ -104,18 +103,17 @@ void OnMouseButton(int button, int state, int x, int y)
 }
 void OnMouseMove(int x, int y)
 {
-	MALib::INPUT::MOUSE.position.x = x;
-	MALib::INPUT::MOUSE.position.y = ScreenRect.height - y;
+	MALib::INPUT::OnMouseMove(ScreenRect.width, ScreenRect.height, x, ScreenRect.height - y);
 }
 void OnKey(uchar key, int x, int y)
 {
-	MALib::INPUT::KEY.pressed[key] = true;
+	MALib::INPUT::OnKeyDown(key);
 
 	OnMouseMove(x, y);
 }
 void OnKeyUp(uchar key, int x, int y)
 {
-	MALib::INPUT::KEY.pressed[key] = false;
+	MALib::INPUT::OnKeyUp(key);
 
 	OnMouseMove(x, y);
 }
@@ -123,26 +121,26 @@ void OnKeySpecial(int key, int x, int y)
 {
 	switch (key)
 	{
-	case GLUT_KEY_F1: MALib::INPUT::KEY.pressed[MALib::KEY_F1] = true; break;
-	case GLUT_KEY_F2: MALib::INPUT::KEY.pressed[MALib::KEY_F2] = true; break;
-	case GLUT_KEY_F3: MALib::INPUT::KEY.pressed[MALib::KEY_F3] = true; break;
-	case GLUT_KEY_F4: MALib::INPUT::KEY.pressed[MALib::KEY_F4] = true; break;
-	case GLUT_KEY_F5: MALib::INPUT::KEY.pressed[MALib::KEY_F5] = true; break;
-	case GLUT_KEY_F6: MALib::INPUT::KEY.pressed[MALib::KEY_F6] = true; break;
-	case GLUT_KEY_F7: MALib::INPUT::KEY.pressed[MALib::KEY_F7] = true; break;
-	case GLUT_KEY_F8: MALib::INPUT::KEY.pressed[MALib::KEY_F8] = true; break;
-	case GLUT_KEY_F9: MALib::INPUT::KEY.pressed[MALib::KEY_F9] = true; break;
-	case GLUT_KEY_F10: MALib::INPUT::KEY.pressed[MALib::KEY_F10] = true; break;
-	case GLUT_KEY_F11: MALib::INPUT::KEY.pressed[MALib::KEY_F11] = true; break;
-	case GLUT_KEY_F12: MALib::INPUT::KEY.pressed[MALib::KEY_F12] = true; break;
-	case GLUT_KEY_LEFT: MALib::INPUT::KEY.pressed[MALib::KEY_LEFT] = true; break;
-	case GLUT_KEY_UP: MALib::INPUT::KEY.pressed[MALib::KEY_UP] = true; break;
-	case GLUT_KEY_RIGHT: MALib::INPUT::KEY.pressed[MALib::KEY_RIGHT] = true; break;
-	case GLUT_KEY_DOWN: MALib::INPUT::KEY.pressed[MALib::KEY_DOWN] = true; break;
-	case GLUT_KEY_PAGE_UP: MALib::INPUT::KEY.pressed[MALib::KEY_PAGEUP] = true; break;
-	case GLUT_KEY_PAGE_DOWN: MALib::INPUT::KEY.pressed[MALib::KEY_PAGEDOWN] = true; break;
-	case GLUT_KEY_HOME: MALib::INPUT::KEY.pressed[MALib::KEY_HOME] = true; break;
-	case GLUT_KEY_INSERT: MALib::INPUT::KEY.pressed[MALib::KEY_INSERT] = true; break;
+	case GLUT_KEY_F1: MALib::INPUT::OnKeyDown(MALib::KEY_F1); break;
+	case GLUT_KEY_F2: MALib::INPUT::OnKeyDown(MALib::KEY_F2); break;
+	case GLUT_KEY_F3: MALib::INPUT::OnKeyDown(MALib::KEY_F3); break;
+	case GLUT_KEY_F4: MALib::INPUT::OnKeyDown(MALib::KEY_F4); break;
+	case GLUT_KEY_F5: MALib::INPUT::OnKeyDown(MALib::KEY_F5); break;
+	case GLUT_KEY_F6: MALib::INPUT::OnKeyDown(MALib::KEY_F6); break;
+	case GLUT_KEY_F7: MALib::INPUT::OnKeyDown(MALib::KEY_F7); break;
+	case GLUT_KEY_F8: MALib::INPUT::OnKeyDown(MALib::KEY_F8); break;
+	case GLUT_KEY_F9: MALib::INPUT::OnKeyDown(MALib::KEY_F9); break;
+	case GLUT_KEY_F10: MALib::INPUT::OnKeyDown(MALib::KEY_F10); break;
+	case GLUT_KEY_F11: MALib::INPUT::OnKeyDown(MALib::KEY_F11); break;
+	case GLUT_KEY_F12: MALib::INPUT::OnKeyDown(MALib::KEY_F12); break;
+	case GLUT_KEY_LEFT: MALib::INPUT::OnKeyDown(MALib::KEY_LEFT); break;
+	case GLUT_KEY_UP: MALib::INPUT::OnKeyDown(MALib::KEY_UP); break;
+	case GLUT_KEY_RIGHT: MALib::INPUT::OnKeyDown(MALib::KEY_RIGHT); break;
+	case GLUT_KEY_DOWN: MALib::INPUT::OnKeyDown(MALib::KEY_DOWN); break;
+	case GLUT_KEY_PAGE_UP: MALib::INPUT::OnKeyDown(MALib::KEY_PAGEUP); break;
+	case GLUT_KEY_PAGE_DOWN: MALib::INPUT::OnKeyDown(MALib::KEY_PAGEDOWN); break;
+	case GLUT_KEY_HOME: MALib::INPUT::OnKeyDown(MALib::KEY_HOME); break;
+	case GLUT_KEY_INSERT: MALib::INPUT::OnKeyDown(MALib::KEY_INSERT); break;
 	default: break;
 	}
 
@@ -152,26 +150,26 @@ void OnKeySpecialUp(int key, int x, int y)
 {
 	switch (key)
 	{
-	case GLUT_KEY_F1: MALib::INPUT::KEY.pressed[MALib::KEY_F1] = false; break;
-	case GLUT_KEY_F2: MALib::INPUT::KEY.pressed[MALib::KEY_F2] = false; break;
-	case GLUT_KEY_F3: MALib::INPUT::KEY.pressed[MALib::KEY_F3] = false; break;
-	case GLUT_KEY_F4: MALib::INPUT::KEY.pressed[MALib::KEY_F4] = false; break;
-	case GLUT_KEY_F5: MALib::INPUT::KEY.pressed[MALib::KEY_F5] = false; break;
-	case GLUT_KEY_F6: MALib::INPUT::KEY.pressed[MALib::KEY_F6] = false; break;
-	case GLUT_KEY_F7: MALib::INPUT::KEY.pressed[MALib::KEY_F7] = false; break;
-	case GLUT_KEY_F8: MALib::INPUT::KEY.pressed[MALib::KEY_F8] = false; break;
-	case GLUT_KEY_F9: MALib::INPUT::KEY.pressed[MALib::KEY_F9] = false; break;
-	case GLUT_KEY_F10: MALib::INPUT::KEY.pressed[MALib::KEY_F10] = false; break;
-	case GLUT_KEY_F11: MALib::INPUT::KEY.pressed[MALib::KEY_F11] = false; break;
-	case GLUT_KEY_F12: MALib::INPUT::KEY.pressed[MALib::KEY_F12] = false; break;
-	case GLUT_KEY_LEFT: MALib::INPUT::KEY.pressed[MALib::KEY_LEFT] = false; break;
-	case GLUT_KEY_UP: MALib::INPUT::KEY.pressed[MALib::KEY_UP] = false; break;
-	case GLUT_KEY_RIGHT: MALib::INPUT::KEY.pressed[MALib::KEY_RIGHT] = false; break;
-	case GLUT_KEY_DOWN: MALib::INPUT::KEY.pressed[MALib::KEY_DOWN] = false; break;
-	case GLUT_KEY_PAGE_UP: MALib::INPUT::KEY.pressed[MALib::KEY_PAGEUP] = false; break;
-	case GLUT_KEY_PAGE_DOWN: MALib::INPUT::KEY.pressed[MALib::KEY_PAGEDOWN] = false; break;
-	case GLUT_KEY_HOME: MALib::INPUT::KEY.pressed[MALib::KEY_HOME] = false; break;
-	case GLUT_KEY_INSERT: MALib::INPUT::KEY.pressed[MALib::KEY_INSERT] = false; break;
+	case GLUT_KEY_F1: MALib::INPUT::OnKeyUp(MALib::KEY_F1); break;
+	case GLUT_KEY_F2: MALib::INPUT::OnKeyUp(MALib::KEY_F2); break;
+	case GLUT_KEY_F3: MALib::INPUT::OnKeyUp(MALib::KEY_F3); break;
+	case GLUT_KEY_F4: MALib::INPUT::OnKeyUp(MALib::KEY_F4); break;
+	case GLUT_KEY_F5: MALib::INPUT::OnKeyUp(MALib::KEY_F5); break;
+	case GLUT_KEY_F6: MALib::INPUT::OnKeyUp(MALib::KEY_F6); break;
+	case GLUT_KEY_F7: MALib::INPUT::OnKeyUp(MALib::KEY_F7); break;
+	case GLUT_KEY_F8: MALib::INPUT::OnKeyUp(MALib::KEY_F8); break;
+	case GLUT_KEY_F9: MALib::INPUT::OnKeyUp(MALib::KEY_F9); break;
+	case GLUT_KEY_F10: MALib::INPUT::OnKeyUp(MALib::KEY_F10); break;
+	case GLUT_KEY_F11: MALib::INPUT::OnKeyUp(MALib::KEY_F11); break;
+	case GLUT_KEY_F12: MALib::INPUT::OnKeyUp(MALib::KEY_F12); break;
+	case GLUT_KEY_LEFT: MALib::INPUT::OnKeyUp(MALib::KEY_LEFT); break;
+	case GLUT_KEY_UP: MALib::INPUT::OnKeyUp(MALib::KEY_UP); break;
+	case GLUT_KEY_RIGHT: MALib::INPUT::OnKeyUp(MALib::KEY_RIGHT); break;
+	case GLUT_KEY_DOWN: MALib::INPUT::OnKeyUp(MALib::KEY_DOWN); break;
+	case GLUT_KEY_PAGE_UP: MALib::INPUT::OnKeyUp(MALib::KEY_PAGEUP); break;
+	case GLUT_KEY_PAGE_DOWN: MALib::INPUT::OnKeyUp(MALib::KEY_PAGEDOWN); break;
+	case GLUT_KEY_HOME: MALib::INPUT::OnKeyUp(MALib::KEY_HOME); break;
+	case GLUT_KEY_INSERT: MALib::INPUT::OnKeyUp(MALib::KEY_INSERT); break;
 	default: break;
 	}
 
@@ -190,8 +188,8 @@ void OnMouseEnter(int state)
 {
 	switch (state)
 	{
-	case GLUT_ENTERED: MALib::INPUT::MOUSE.active = true; break;
-	case GLUT_LEFT: MALib::INPUT::MOUSE.active = false; break;
+	case GLUT_ENTERED: MALib::INPUT::OnMouseActive(true); break;
+	case GLUT_LEFT: MALib::INPUT::OnMouseActive(false); break;
 	default: break;
 	}
 }
@@ -205,6 +203,16 @@ void OnReshape(int width, int height)
 	glUniform2f(Uniforms.screen, float(ScreenRect.width), float(ScreenRect.height));
 	glutReshapeWindow(ScreenRect.width, ScreenRect.height);
 	glViewport(0, 0, ScreenRect.width, ScreenRect.height);
+}
+
+void OnHostInitialize()
+{
+	Map->rebuild(8, 8);
+	Local->id = 1;
+	Local->rect.move(256, 128);
+}
+void OnClientInitialize()
+{
 }
 void OnFrame()
 {
@@ -242,13 +250,15 @@ void OnUpdate()
 
 	int dx = 0;
 	int dy = 0;
-	if (MALib::INPUT::GetKey(MALib::KEY_LEFT)) dx--;
-	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT)) dx++;
-	if (MALib::INPUT::GetKey(MALib::KEY_UP)) dy++;
-	if (MALib::INPUT::GetKey(MALib::KEY_DOWN)) dy--;
+	if (MALib::INPUT::GetKey(MALib::KEY_LEFT)) dx -= 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT)) dx += 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_UP)) dy += 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_DOWN)) dy -= 4;
 
 	Local->rect.move(Local->rect.cx + dx, Local->rect.cy + dy);
 	ScreenRect.move(Local->rect.cx, Local->rect.cy);
+
+	Local->update();
 }
 
 #endif

@@ -7,6 +7,7 @@ public:
 	Player();
 	~Player();
 
+	void update();
 	void draw();
 
 	void createPacket(PLAYER_PACKET& packet);

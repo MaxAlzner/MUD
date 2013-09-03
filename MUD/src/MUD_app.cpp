@@ -26,7 +26,6 @@ void OnStart()
 }
 void OnInitialize(int argc, char **argv)
 {
-	MALib::LOG_Initialize(true);
 	MALib::RANDOM_Initialize();
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -115,17 +114,17 @@ void OnInitialize(int argc, char **argv)
 	Map = new Dungeon;
 	Local = new Player;
 	Connected.resize(8);
-	Local->rect.move(256, 128);
 
 	atexit(OnUninitialize);
 }
 void OnUninitialize()
 {
-	if (ShaderProgram != 0) glDeleteProgram(ShaderProgram);
-	if (SpriteBuffer != 0) glDeleteBuffers(1, &SpriteBuffer);
+	//if (ShaderProgram != 0) glDeleteProgram(ShaderProgram);
+	//if (SpriteBuffer != 0) glDeleteBuffers(1, &SpriteBuffer);
+	glutDestroyWindow(WindowHandle);
 	MALib::SOCK_StopAcceptingConnections();
+	Disconnect();
 	MALib::SOCK_Uninitialize();
-	MALib::LOG_Unitialize();
 }
 
 #endif
