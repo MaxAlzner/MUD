@@ -5,7 +5,7 @@
 Player::Player()
 {
 	memset(this, 0, sizeof(Player));
-	this->rect.resize(128, 128);
+	this->rect.resize(80, 80);
 	this->color = MALib::COLOR(1.0f, 0.25f, 0.1f);
 }
 Player::~Player()
@@ -23,7 +23,7 @@ void Player::update()
 			MALib::POINT dis = MALib::Displacement(this->rect, wall->rect);
 			if (dis.x == 0 && dis.y == 0) continue;
 
-			printf("  DISPLACEMENT %d, %d\n", dis.x, dis.y);
+			//printf("  DISPLACEMENT %d, %d\n", dis.x, dis.y);
 			//this->rect -= dis;
 		}
 	}

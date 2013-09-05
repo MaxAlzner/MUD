@@ -9,6 +9,10 @@ typedef struct START_PACKET
 	}
 
 	__int32 id;
+	__int32 mapWidth;
+	__int32 mapHeight;
+	__int32 mapCellSize;
+	__int32 mapBufferSize;
 
 } CONNECTED_PACKET;
 typedef struct PLAYER_PACKET
@@ -62,6 +66,7 @@ extern void Disconnect();
 
 extern void AddToState(GAME_PACKET& state, PLAYER_PACKET& player);
 extern void BuildState(GAME_PACKET& state);
+extern bool ValidateState(GAME_PACKET& state);
 extern void GetPlayerFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet);
 
 extern void PollClients();

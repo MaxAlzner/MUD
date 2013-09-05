@@ -1,9 +1,6 @@
 #ifndef MUD_DEF_H_
 #define MUD_DEF_H_
 
-#define MAX_CLIENTS 3
-#define FRAMES_PER_SECOND 16
-
 extern void UpdateFrameCount();
 
 extern bool AppRunning;

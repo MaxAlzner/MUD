@@ -18,6 +18,13 @@
 #include <MALib.h>
 #include <MALib_sock.h>
 
+#define MAX_CLIENTS 3u
+#define MAP_WIDTH 8u
+#define MAP_HEIGHT 8u
+#define MAP_BUFFERSIZE 81u
+#define MAP_CELLSIZE 128u
+#define FRAMES_PER_SECOND 16u
+
 //#include "MUD_input.h"
 #include "MUD_network.h"
 #include "MUD_dungeon.h"

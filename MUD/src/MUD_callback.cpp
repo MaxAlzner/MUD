@@ -207,9 +207,9 @@ void OnReshape(int width, int height)
 
 void OnHostInitialize()
 {
-	Map->rebuild(8, 8);
+	Map->rebuild();
 	Local->id = 1;
-	Local->rect.move(256, 128);
+	Local->rect.move((MAP_WIDTH / 2) * MAP_CELLSIZE, (MAP_HEIGHT / 2) * MAP_CELLSIZE);
 }
 void OnClientInitialize()
 {
@@ -250,10 +250,10 @@ void OnUpdate()
 
 	int dx = 0;
 	int dy = 0;
-	if (MALib::INPUT::GetKey(MALib::KEY_LEFT)) dx -= 4;
-	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT)) dx += 4;
-	if (MALib::INPUT::GetKey(MALib::KEY_UP)) dy += 4;
-	if (MALib::INPUT::GetKey(MALib::KEY_DOWN)) dy -= 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_LEFT) || MALib::INPUT::GetKey('a')) dx -= 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT) || MALib::INPUT::GetKey('d')) dx += 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_UP) || MALib::INPUT::GetKey('w')) dy += 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_DOWN) || MALib::INPUT::GetKey('s')) dy -= 4;
 
 	Local->rect.move(Local->rect.cx + dx, Local->rect.cy + dy);
 	ScreenRect.move(Local->rect.cx, Local->rect.cy);

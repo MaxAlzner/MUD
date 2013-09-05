@@ -5,7 +5,7 @@ typedef struct DungeonWall
 {
 	DungeonWall();
 
-
+	uint id;
 	MALib::RECT rect;
 } DungeonWall;
 
@@ -15,7 +15,7 @@ public:
 	Dungeon();
 	~Dungeon();
 
-	void rebuild(uint columns, uint rows);
+	void rebuild();
 	void addWall(uint x, uint y);
 
 	void draw();

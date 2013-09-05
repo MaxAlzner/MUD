@@ -66,7 +66,21 @@ void ConnectToGame()
 		
 		START_PACKET connected;
 		MALib::SOCK_Receive(&connected, sizeof(START_PACKET));
+
+		__int8* map = new __int8[connected.mapBufferSize];
+		memset(map, 0, sizeof(__int8) * connected.mapBufferSize);
+
+		MALib::SOCK_Receive(map, sizeof(__int8) * connected.mapBufferSize);
+
+		for (int i = 0; i < connected.mapBufferSize; i++)
+		{
+			if (map[i] == 0) continue;
+			Map->addWall(i % connected.mapWidth, i / connected.mapHeight);
+		}
 		Local->id = connected.id;
+		Local->rect.move((connected.mapWidth / 2) * connected.mapCellSize, (connected.mapHeight / 2) * connected.mapCellSize);
+
+		delete [] map;
 		
 		printf("  Connected to host\n");
 		printf("  I am player %d\n", Local->id);
@@ -114,6 +128,17 @@ void AddToState(GAME_PACKET& state, PLAYER_PACKET& player)
 	default: break;
 	}
 }
+void BuildState(GAME_PACKET& state)
+{
+	if (state.players._1.id == 1) state.connected++;
+	if (state.players._2.id == 2) state.connected++;
+	if (state.players._3.id == 3) state.connected++;
+	if (state.players._4.id == 4) state.connected++;
+}
+bool ValidateState(GAME_PACKET& state)
+{
+	return state.connected <= 4;
+}
 void GetPlayerFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet)
 {
 	uint index = slot - 1;
@@ -121,13 +146,6 @@ void GetPlayerFromState(GAME_PACKET& state, uint slot, PLAYER_PACKET* packet)
 
 	PLAYER_PACKET* players = (PLAYER_PACKET*)&state.players;
 	*packet = players[index];
-}
-void BuildState(GAME_PACKET& state)
-{
-	if (state.players._1.id == 1) state.connected++;
-	if (state.players._2.id == 2) state.connected++;
-	if (state.players._3.id == 3) state.connected++;
-	if (state.players._4.id == 4) state.connected++;
 }
 
 void PollClients()
@@ -144,8 +162,22 @@ void PollClients()
 			
 			START_PACKET connected;
 			connected.id = AcceptedClients + 1;
+			connected.mapWidth = MAP_WIDTH;
+			connected.mapHeight = MAP_HEIGHT;
+			connected.mapCellSize = MAP_CELLSIZE;
+			connected.mapBufferSize = MAP_BUFFERSIZE;
+
+			static __int8 map[MAP_BUFFERSIZE];
+			memset(map, 0, sizeof(__int8) * MAP_BUFFERSIZE);
+			for (uint i = 0; i < Map->walls.length(); i++)
+			{
+				uint k = Map->walls[i]->id;
+				map[k] = 1;
+			}
+
 			MALib::SOCK_BindConnection(sock);
 			MALib::SOCK_Send(&connected, sizeof(START_PACKET));
+			MALib::SOCK_Send(map, sizeof(__int8) * MAP_BUFFERSIZE);
 		}
 	}
 }
@@ -175,9 +207,10 @@ void SendCommunicate()
 }
 void ReceiveCommunicate()
 {
+	GAME_PACKET state;
 	if (HostingGame)
 	{
-		StatePacket = GAME_PACKET();
+		//StatePacket = GAME_PACKET();
 		PLAYER_PACKET local;
 		Local->createPacket(local);
 		for (uint i = 0; i < Connected.length(); i++)
@@ -189,18 +222,22 @@ void ReceiveCommunicate()
 			MALib::SOCK_BindConnection(player->sock);
 			MALib::SOCK_Receive(&slot, sizeof(PLAYER_PACKET));
 			player->applyPacket(slot);
-			AddToState(StatePacket, slot);
+			AddToState(state, slot);
 		}
 		
-		AddToState(StatePacket, local);
-		BuildState(StatePacket);
+		AddToState(state, local);
+		BuildState(state);
+		StatePacket = state;
 	}
 	else
 	{
-		MALib::SOCK_Receive(&StatePacket, sizeof(GAME_PACKET));
+		MALib::SOCK_Receive(&state, sizeof(GAME_PACKET));
+
+		if (!ValidateState(state)) return;
+		StatePacket = state;
 		
 		PLAYER_PACKET local;
-		GetPlayerFromState(StatePacket, Local->id, &local);
+		GetPlayerFromState(state, Local->id, &local);
 
 		for (uint i = Connected.length(); i < uint(StatePacket.connected) - 1; i++) Connected.add(new Player);
 
