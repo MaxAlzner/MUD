@@ -40,9 +40,9 @@ void Dungeon::addWall(uint x, uint y)
 {
 	if (x == MAP_WIDTH / 2 && y == MAP_HEIGHT / 2) return;
 	//printf("  WALL %d, %d\n", x, y);
-	DungeonWall* wall = new DungeonWall;
-	wall->rect += MALib::POINT(x * 128, y * 128);
-	wall->id = x + (MAP_WIDTH * y);
+	DungeonWall wall;
+	wall.rect += MALib::POINT(x * 128, y * 128);
+	wall.id = x + (MAP_WIDTH * y);
 	this->walls.add(wall);
 }
 
@@ -51,9 +51,9 @@ void Dungeon::draw()
 	DrawRoundedBox(this->rect.cx, this->rect.cy, this->rect.width, this->rect.height, 0.2f, 0.0f, this->color);
 	for (uint i = 0; i < this->walls.length(); i++)
 	{
-		DungeonWall* wall = this->walls[i];
+		DungeonWall wall = this->walls[i];
 
-		DrawCircle(wall->rect.cx, wall->rect.cy, 64, MALib::COLOR(0.8f, 0.8f, 0.8f));
+		DrawCircle(wall.rect.cx, wall.rect.cy, 64, MALib::COLOR(0.8f, 0.8f, 0.8f));
 	}
 }
 

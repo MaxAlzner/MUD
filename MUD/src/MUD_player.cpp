@@ -16,11 +16,11 @@ void Player::update()
 {
 	for (uint i = 0; i < Map->walls.length(); i++)
 	{
-		DungeonWall* wall = Map->walls[i];
+		DungeonWall wall = Map->walls[i];
 
-		if (MALib::Clipping(this->rect, wall->rect))
+		if (MALib::Clipping(this->rect, wall.rect))
 		{
-			MALib::POINT dis = MALib::Displacement(this->rect, wall->rect);
+			MALib::POINT dis = MALib::Displacement(this->rect, wall.rect);
 			if (dis.x == 0 && dis.y == 0) continue;
 
 			//printf("  DISPLACEMENT %d, %d\n", dis.x, dis.y);

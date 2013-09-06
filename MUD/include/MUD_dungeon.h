@@ -22,7 +22,7 @@ public:
 
 	MALib::RECT rect;
 	MALib::COLOR color;
-	MALib::ARRAY<DungeonWall*> walls;
+	MALib::ARRAY<DungeonWall> walls;
 };
 
 #endif

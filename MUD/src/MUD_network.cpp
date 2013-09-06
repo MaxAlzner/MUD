@@ -75,7 +75,8 @@ void ConnectToGame()
 		for (int i = 0; i < connected.mapBufferSize; i++)
 		{
 			if (map[i] == 0) continue;
-			Map->addWall(i % connected.mapWidth, i / connected.mapHeight);
+			printf("  %d %d %d\n", i, i % connected.mapWidth, i / connected.mapHeight);
+			Map->addWall(i % connected.mapWidth, i / connected.mapWidth);
 		}
 		Local->id = connected.id;
 		Local->rect.move((connected.mapWidth / 2) * connected.mapCellSize, (connected.mapHeight / 2) * connected.mapCellSize);
@@ -169,11 +170,7 @@ void PollClients()
 
 			static __int8 map[MAP_BUFFERSIZE];
 			memset(map, 0, sizeof(__int8) * MAP_BUFFERSIZE);
-			for (uint i = 0; i < Map->walls.length(); i++)
-			{
-				uint k = Map->walls[i]->id;
-				map[k] = 1;
-			}
+			for (uint i = 0; i < Map->walls.length(); i++) map[Map->walls[i].id] = 1;
 
 			MALib::SOCK_BindConnection(sock);
 			MALib::SOCK_Send(&connected, sizeof(START_PACKET));

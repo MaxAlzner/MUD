@@ -63,14 +63,9 @@ string FragmentShader =
 	
 	"void main()\n"
 	"{\n"
-	"	switch (shape)\n"
-	"	{\n"
-	"	case SHAPE_CIRCLE: circle(); break;\n"
-	"	case SHAPE_BOX: box(); break;\n"
-	"	case SHAPE_ROUNDED_BOX: roundedBox(); break;\n"
-
-	"	default: break;\n"
-	"	}\n"
+	"	if (shape == SHAPE_CIRCLE) circle();\n"
+	"	else if (shape == SHAPE_BOX) box();\n"
+	"	else if (shape == SHAPE_ROUNDED_BOX) roundedBox();\n"
 	"}\n";
 
 void DrawSprite(uint sprite, int x, int y, uint width, uint height, float rotation, MALib::COLOR color)

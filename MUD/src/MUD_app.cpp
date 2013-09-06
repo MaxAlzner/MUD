@@ -35,7 +35,7 @@ void OnInitialize(int argc, char **argv)
 	GLenum glError = glewInit();
 	if (GLEW_OK != glError)
 	{
-		MALib::LOG_Message("GLEW ERROR", (const string)glewGetErrorString(glError));
+		printf("GLEW ERROR %s\n", (const string)glewGetErrorString(glError));
 	}
 
 	glEnable(GL_TEXTURE_2D);
