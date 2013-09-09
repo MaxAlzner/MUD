@@ -20,25 +20,27 @@ Dungeon::~Dungeon()
 {
 }
 
-void Dungeon::rebuild()
+void Dungeon::rebuild(uint columns, uint rows)
 {
+	this->colums = columns;
+	this->rows = rows;
 	this->walls.zero();
-	for (uint i = 0; i < MAP_WIDTH + 1; i++)
+	for (uint i = 0; i < columns + 1; i++)
 	{
 		this->addWall(i, 0);
-		this->addWall(i, MAP_HEIGHT);
+		this->addWall(i, rows);
 	}
-	for (uint i = 1; i < MAP_HEIGHT; i++)
+	for (uint i = 1; i < rows; i++)
 	{
 		this->addWall(0, i);
-		this->addWall(MAP_WIDTH, i);
+		this->addWall(columns, i);
 	}
 	for (uint i = 0; i < MALib::RANDOM_Range(4u, 4 + MALib::RANDOM_D4()); i++) 
-		this->addWall(MALib::RANDOM_Range(1u, MAP_WIDTH), MALib::RANDOM_Range(1u, MAP_HEIGHT));
-	}
+		this->addWall(MALib::RANDOM_Range(1u, columns), MALib::RANDOM_Range(1u, rows));
+}
 void Dungeon::addWall(uint x, uint y)
 {
-	if (x == MAP_WIDTH / 2 && y == MAP_HEIGHT / 2) return;
+	if (x == this->colums && y == this->rows) return;
 	//printf("  WALL %d, %d\n", x, y);
 	DungeonWall wall;
 	wall.rect += MALib::POINT(x * 128, y * 128);

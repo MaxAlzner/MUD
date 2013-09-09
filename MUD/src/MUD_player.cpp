@@ -45,13 +45,7 @@ void Player::applyPacket(PLAYER_PACKET& packet)
 {
 	this->rect.cx = packet.position.x;
 	this->rect.cy = packet.position.y;
-}
-
-void AddPlayer(MALib::SOCKHANDLE* sock)
-{
-	Player* player = new Player;
-	player->sock = sock;
-	Connected.add(player);
+	this->lastPacket = packet;
 }
 
 #endif

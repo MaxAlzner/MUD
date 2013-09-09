@@ -13,8 +13,6 @@ extern float Theta;
 extern float AspectRatio;
 extern MALib::RECT ScreenRect;
 
-extern POINT Camera;
-
 extern Dungeon* Map;
 extern Player* Local;
 extern MALib::ARRAY<Player*> Connected;
@@ -23,6 +21,8 @@ extern GAME_PACKET StatePacket;
 extern uint Port;
 extern string IPAddress;
 extern bool HostingGame;
+extern bool Subscribed;
+extern bool AssignUser;
 
 extern uint ShaderProgram;
 extern uint SpriteBuffer;

@@ -1,11 +1,7 @@
 #include "../include/MUD_main.h"
 
 #ifdef MUD_DEF_H_
-/*
-MALib::MouseInput MALib::INPUT::MOUSE;
-MALib::KeyInput MALib::INPUT::KEY;
-MALib::GamepadInput MALib::INPUT::GAMEPAD;
-*/
+
 bool AppRunning = true;
 bool Visible = false;
 int WindowHandle = -1;
@@ -24,6 +20,8 @@ GAME_PACKET StatePacket;
 uint Port = 20533;
 string IPAddress = 0;
 bool HostingGame = false;
+bool Subscribed = false;
+bool AssignUser = false;
 
 uint ShaderProgram = 0;
 uint SpriteBuffer = 0;

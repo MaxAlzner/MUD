@@ -17,10 +17,7 @@ public:
 	MALib::RECT rect;
 	MALib::COLOR color;
 
-	MALib::SOCKHANDLE* sock;
 	PLAYER_PACKET lastPacket;
 };
-
-extern void AddPlayer(MALib::SOCKHANDLE* sock);
 
 #endif

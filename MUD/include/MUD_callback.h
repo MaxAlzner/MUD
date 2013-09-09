@@ -6,9 +6,6 @@ extern void UpdateFrameCount();
 extern void FrameTimer(int id);
 
 extern ulong __stdcall UpdateThread(void* parameter);
-extern ulong __stdcall NetworkPollThread(void* parameter);
-extern ulong __stdcall NetworkSendThread(void* parameter);
-extern ulong __stdcall NetworkReceiveThread(void* parameter);
 
 extern void OnMouseButton(int button, int state, int x, int y);
 extern void OnMouseMove(int x, int y);

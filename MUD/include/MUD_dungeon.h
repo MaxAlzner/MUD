@@ -15,11 +15,13 @@ public:
 	Dungeon();
 	~Dungeon();
 
-	void rebuild();
+	void rebuild(uint columns, uint rows);
 	void addWall(uint x, uint y);
 
 	void draw();
 
+	uint colums;
+	uint rows;
 	MALib::RECT rect;
 	MALib::COLOR color;
 	MALib::ARRAY<DungeonWall> walls;

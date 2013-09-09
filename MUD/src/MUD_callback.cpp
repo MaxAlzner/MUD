@@ -18,6 +18,7 @@ void UpdateFrameCount()
 
 void FrameTimer(int id)
 {
+	OnUpdate();
 	glutPostRedisplay();
 	if (!AppRunning)
 	{
@@ -35,50 +36,6 @@ ulong __stdcall UpdateThread(void* parameter)
 		{
 			DeltaTime = float(NewPing - LastPing) / 1000.0f;
 			OnUpdate();
-			LastPing = NewPing;
-		}
-	}
-	return 0;
-}
-ulong __stdcall NetworkPollThread(void* parameter)
-{
-	static int LastPing = 0;
-
-	StartCommunication();
-	while (AppRunning && AcceptedClients < MAX_CLIENTS)
-	{
-		int NewPing = glutGet(GLUT_ELAPSED_TIME);
-		if (NewPing - LastPing >= 33)
-		{
-			PollClients();
-			LastPing = NewPing;
-		}
-	}
-	return 0;
-}
-ulong __stdcall NetworkSendThread(void* parameter)
-{
-	static int LastPing = 0;
-	while (AppRunning)
-	{
-		int NewPing = glutGet(GLUT_ELAPSED_TIME);
-		if (NewPing - LastPing >= 33)
-		{
-			SendCommunicate();
-			LastPing = NewPing;
-		}
-	}
-	return 0;
-}
-ulong __stdcall NetworkReceiveThread(void* parameter)
-{
-	static int LastPing = 0;
-	while (AppRunning)
-	{
-		int NewPing = glutGet(GLUT_ELAPSED_TIME);
-		if (NewPing - LastPing >= 33)
-		{
-			ReceiveCommunicate();
 			LastPing = NewPing;
 		}
 	}
@@ -207,7 +164,7 @@ void OnReshape(int width, int height)
 
 void OnHostInitialize()
 {
-	Map->rebuild();
+	Map->rebuild(MAP_WIDTH, MAP_HEIGHT);
 	Local->id = 1;
 	Local->rect.move((MAP_WIDTH / 2) * MAP_CELLSIZE, (MAP_HEIGHT / 2) * MAP_CELLSIZE);
 }
@@ -243,8 +200,6 @@ void OnFrame()
 }
 void OnUpdate()
 {
-	if (MALib::INPUT::GetKey(MALib::KEY_ESCAPE)) AppRunning = false;
-
 	Theta += 1.0f;
 	if (Theta >= 360.0f) Theta = 0.0f;
 
@@ -259,6 +214,8 @@ void OnUpdate()
 	ScreenRect.move(Local->rect.cx, Local->rect.cy);
 
 	Local->update();
+	
+	if (MALib::INPUT::GetKey(MALib::KEY_ESCAPE)) AppRunning = false;
 }
 
 #endif
