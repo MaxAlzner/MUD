@@ -101,46 +101,29 @@ void Connect()
 			printf("  Connected to host\n");
 		}
 		printf("\n");
-		/*START_PACKET connected;
-		MALib::SOCK_Receive(&connected, sizeof(START_PACKET));
 
-		__int8* map = new __int8[connected.mapBufferSize];
-		memset(map, 0, sizeof(__int8) * connected.mapBufferSize);
-
-		MALib::SOCK_Receive(map, sizeof(__int8) * connected.mapBufferSize);
-
-		for (int i = 0; i < connected.mapBufferSize; i++)
-		{
-			if (map[i] == 0) continue;
-			printf("  %d %d %d\n", i, i % connected.mapWidth, i / connected.mapHeight);
-			Map->addWall(i % connected.mapWidth, i / connected.mapWidth);
-		}
-		Local->id = connected.id;
-		Local->rect.move((connected.mapWidth / 2) * connected.mapCellSize, (connected.mapHeight / 2) * connected.mapCellSize);
-
-		delete [] map;
-		
-		printf("  Connected to host\n");
-		printf("  I am player %d\n", Local->id);
-
-		OnClientInitialize();*/
 		break;
 	}
 }
 void Disconnect()
 {
 	MALib::SOCK_Disconnect();
-	/*{
-		PLAYER_PACKET packet;
-		Local->createPacket(packet);
-		packet.stillPlaying = 0;
-		MALib::SOCK_Send(&packet, sizeof(PLAYER_PACKET));
-		
-		MALib::SOCK_Disconnect();
-		delete [] IPAddress;
-	}*/
 }
 
+void OnNetworkCullPlayers()
+{
+	time_t t = time(0);
+	uint i = 0;
+	while (i < Connected.length())
+	{
+		Player* player = Connected[i];
+		if (player == NULL || player->lastPacket.time == 0) continue;
+
+		uint timeout = t - player->lastPacket.time;
+		if (timeout >= PLAYER_TIMEOUT) Connected.remove(player);
+		i++;
+	}
+}
 int OnNetworkCallbackSend(char* buffer, uint bytes)
 {
 	if (bytes < sizeof(__int32) + sizeof(GAME_PACKET)) return 0;
@@ -152,21 +135,19 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 			AcceptedClients++;
 			AssignUser = false;
 			Player* player = new Player;
-			player->id = AcceptedClients;
+			player->id = AcceptedClients + 1;
 			Connected.add(player);
-			printf("  Player connected\n");
+			printf("  Player connected : %d\n", player->id);
 			
 			START_PACKET connected;
-			connected.id = player->id + 1;
-			connected.mapWidth = MAP_WIDTH;
-			connected.mapHeight = MAP_HEIGHT;
-			connected.mapCellSize = MAP_CELLSIZE;
-			connected.mapBufferSize = MAP_BUFFERSIZE;
+			connected.id = player->id;
+			Map->createPacket(connected);
+
 			*(__int32*)buffer = (__int32)PACKET_TYPE_ASSIGN_USER;
 			buffer += sizeof(__int32);
 			*((START_PACKET*)buffer) = connected;
 			buffer += sizeof(START_PACKET);
-			for (uint i = 0; i < Map->walls.length(); i++) buffer[Map->walls[i].id] = 1;
+			Map->fillWallBuffer((__int32*)buffer, bytes);
 		}
 		else
 		{
@@ -193,7 +174,7 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 		}
 	}
 
-	return 100;
+	return 33;
 }
 int OnNetworkCallbackReceive(char* buffer, uint bytes)
 {
@@ -208,18 +189,13 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 		START_PACKET connected = *((START_PACKET*)buffer);
 		buffer += sizeof(START_PACKET);
 
-		printf("  MAP SIZE %d %d %d\n", connected.mapWidth, connected.mapHeight, connected.mapCellSize);
-		for (int i = 0; i < connected.mapBufferSize; i++)
-		{
-			if (buffer[i] == 0) continue;
-			printf("  %d %d %d\n", i, i % connected.mapWidth, i / connected.mapHeight);
-			Map->addWall(i % connected.mapWidth, i / connected.mapWidth);
-		}
+		Map->applyPacket(connected);
+		Map->extractWallBuffer((__int32*)buffer, connected.walls);
 		Local->id = connected.id;
-		Local->rect.move((connected.mapWidth / 2) * connected.mapCellSize, (connected.mapHeight / 2) * connected.mapCellSize);
+		Local->rect.move(connected.x, connected.y);
 
 		printf("  Connected to host\n");
-		printf("  I am player %d\n", Local->id);
+		printf("  I am player : %d\n", Local->id);
 
 		OnClientInitialize();
 	}
@@ -232,22 +208,20 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 		for (uint i = 0; i < Connected.length(); i++)
 		{
 			Player* player = Connected[i];
-			if (player == NULL || player->id == 0 || player->id == packet.id) continue;
+			if (player == NULL || player->id == 0) continue;
 
-			player->applyPacket(packet);
+			if (player->id == packet.id) player->applyPacket(packet);
 		}
 		PLAYER_PACKET local;
 		Local->createPacket(local);
 		AddToState(state, local);
 		BuildState(state);
-		//printf("  CONNECTED PLAYERS %d\n", state.connected);
 		if (ValidateState(state)) StatePacket = state;
 	}
 	else if (type == PACKET_TYPE_MASS_UPDATE && !HostingGame)
 	{
 		GAME_PACKET state = *((GAME_PACKET*)buffer);
 		
-		//printf("  CONNECTED PLAYERS %d\n", state.connected);
 		if (ValidateState(state))
 		{
 			StatePacket = state;
@@ -271,110 +245,7 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 		}
 	}
 
-	return 100;
+	return 33;
 }
-
-/*void PollClients()
-{
-	if (Clients == NULL) return;
-	for (uint i = AcceptedClients; i < MAX_CLIENTS; i++)
-	{
-		MALib::SOCKHANDLE* sock = Clients[i];
-		if (sock != NULL)
-		{
-			AddPlayer(sock);
-			AcceptedClients++;
-			printf("  Player connected\n");
-			
-			START_PACKET connected;
-			connected.id = AcceptedClients + 1;
-			connected.mapWidth = MAP_WIDTH;
-			connected.mapHeight = MAP_HEIGHT;
-			connected.mapCellSize = MAP_CELLSIZE;
-			connected.mapBufferSize = MAP_BUFFERSIZE;
-
-			static __int8 map[MAP_BUFFERSIZE];
-			memset(map, 0, sizeof(__int8) * MAP_BUFFERSIZE);
-			for (uint i = 0; i < Map->walls.length(); i++) map[Map->walls[i].id] = 1;
-
-			MALib::SOCK_BindConnection(sock);
-			MALib::SOCK_Send(&connected, sizeof(START_PACKET));
-			MALib::SOCK_Send(map, sizeof(__int8) * MAP_BUFFERSIZE);
-		}
-	}
-}
-void StartCommunication()
-{
-}
-void SendCommunicate()
-{
-	if (HostingGame)
-	{
-		for (uint i = 0; i < Connected.length(); i++)
-		{
-			Player* player = Connected[i];
-			if (player == NULL || player->sock == NULL) continue;
-			
-			MALib::SOCK_BindConnection(player->sock);
-			MALib::SOCK_Send(&StatePacket, sizeof(GAME_PACKET));
-		}
-	}
-	else
-	{
-		PLAYER_PACKET local;
-		Local->createPacket(local);
-
-		MALib::SOCK_Send(&local, sizeof(PLAYER_PACKET));
-	}
-}
-void ReceiveCommunicate()
-{
-	GAME_PACKET state;
-	if (HostingGame)
-	{
-		//StatePacket = GAME_PACKET();
-		PLAYER_PACKET local;
-		Local->createPacket(local);
-		for (uint i = 0; i < Connected.length(); i++)
-		{
-			Player* player = Connected[i];
-			if (player == NULL || player->sock == NULL) continue;
-
-			PLAYER_PACKET slot;
-			MALib::SOCK_BindConnection(player->sock);
-			MALib::SOCK_Receive(&slot, sizeof(PLAYER_PACKET));
-			player->applyPacket(slot);
-			AddToState(state, slot);
-		}
-		
-		AddToState(state, local);
-		BuildState(state);
-		StatePacket = state;
-	}
-	else
-	{
-		MALib::SOCK_Receive(&state, sizeof(GAME_PACKET));
-
-		if (!ValidateState(state)) return;
-		StatePacket = state;
-		
-		PLAYER_PACKET local;
-		GetPlayerFromState(state, Local->id, &local);
-
-		for (uint i = Connected.length(); i < uint(StatePacket.connected) - 1; i++) Connected.add(new Player);
-
-		PLAYER_PACKET* players = (PLAYER_PACKET*)&StatePacket.players;
-		uint k = 0;
-		for (uint i = 0; i < uint(StatePacket.connected); i++)
-		{
-			if (k >= Connected.length()) break;
-			PLAYER_PACKET packet = players[i];
-			if (packet == local) continue;
-			Player* player = Connected[k];
-			player->applyPacket(packet);
-			k++;
-		}
-	}
-}*/
 
 #endif

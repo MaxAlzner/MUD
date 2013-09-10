@@ -200,6 +200,8 @@ void OnFrame()
 }
 void OnUpdate()
 {
+	OnNetworkCullPlayers();
+	
 	Theta += 1.0f;
 	if (Theta >= 360.0f) Theta = 0.0f;
 

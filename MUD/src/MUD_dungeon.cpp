@@ -40,11 +40,13 @@ void Dungeon::rebuild(uint columns, uint rows)
 }
 void Dungeon::addWall(uint x, uint y)
 {
-	if (x == this->colums && y == this->rows) return;
+	if (x == this->colums / 2 && y == this->rows / 2) return;
 	//printf("  WALL %d, %d\n", x, y);
 	DungeonWall wall;
 	wall.rect += MALib::POINT(x * 128, y * 128);
-	wall.id = x + (MAP_WIDTH * y);
+	//wall.id = x + (MAP_WIDTH * y);
+	wall.x = x;
+	wall.y = y;
 	this->walls.add(wall);
 }
 
@@ -57,6 +59,55 @@ void Dungeon::draw()
 
 		DrawCircle(wall.rect.cx, wall.rect.cy, 64, MALib::COLOR(0.8f, 0.8f, 0.8f));
 	}
+}
+
+void Dungeon::createPacket(START_PACKET& packet)
+{
+	packet.columns = this->colums;
+	packet.rows = this->rows;
+	packet.width = this->rect.width;
+	packet.height = this->rect.height;
+	packet.x = this->rect.cx;
+	packet.y = this->rect.cy;
+	packet.walls = this->walls.length();
+}
+void Dungeon::applyPacket(START_PACKET& packet)
+{
+	this->colums = packet.columns;
+	this->rows = packet.rows;
+	this->rect.resize(packet.width, packet.height);
+	this->rect.move(packet.x, packet.y);
+}
+uint Dungeon::fillWallBuffer(__int32* buffer, uint size)
+{
+	uint count = 0;
+	__int32* read = buffer;
+	for (uint i = 0; i < this->walls.length(); i++)
+	{
+		if (count >= size) break;
+		DungeonWall wall = this->walls[i];
+		*read = wall.x;
+		read++;
+		*read = wall.y;
+		read++;
+		count++;
+	}
+	return count;
+}
+uint Dungeon::extractWallBuffer(__int32* buffer, uint count)
+{
+	uint extracted = 0;
+	__int32* read = buffer;
+	for (uint i = 0; i < count; i++)
+	{
+		__int32 x = *read;
+		read++;
+		__int32 y = *read;
+		read++;
+		this->addWall(x, y);
+		extracted++;
+	}
+	return extracted;
 }
 
 #endif

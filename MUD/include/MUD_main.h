@@ -24,6 +24,7 @@
 #define MAP_BUFFERSIZE 81u
 #define MAP_CELLSIZE 128u
 #define FRAMES_PER_SECOND 16u
+#define PLAYER_TIMEOUT 30u
 
 //#include "MUD_input.h"
 #include "MUD_network.h"

@@ -17,10 +17,13 @@ typedef struct START_PACKET
 	}
 
 	__int32 id;
-	__int32 mapWidth;
-	__int32 mapHeight;
-	__int32 mapCellSize;
-	__int32 mapBufferSize;
+	__int32 columns;
+	__int32 rows;
+	__int32 width;
+	__int32 height;
+	__int32 x;
+	__int32 y;
+	__int32 walls;
 
 } CONNECTED_PACKET;
 typedef struct PLAYER_PACKET
@@ -41,6 +44,7 @@ typedef struct PLAYER_PACKET
 	} position;
 
 	__int32 id;
+	__int32 time;
 	__int8 stillPlaying;
 	
 } PLAYER_PACKET;
@@ -76,6 +80,7 @@ extern void ChooseGameType();
 extern void Connect();
 extern void Disconnect();
 
+extern void OnNetworkCullPlayers();
 extern int OnNetworkCallbackSend(char* buffer, uint bytes);
 extern int OnNetworkCallbackReceive(char* buffer, uint bytes);
 

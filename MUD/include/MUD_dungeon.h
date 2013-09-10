@@ -5,7 +5,8 @@ typedef struct DungeonWall
 {
 	DungeonWall();
 
-	uint id;
+	uint x;
+	uint y;
 	MALib::RECT rect;
 } DungeonWall;
 
@@ -19,6 +20,11 @@ public:
 	void addWall(uint x, uint y);
 
 	void draw();
+
+	void createPacket(START_PACKET& packet);
+	void applyPacket(START_PACKET& packet);
+	uint fillWallBuffer(__int32* buffer, uint size);
+	uint extractWallBuffer(__int32* buffer, uint count);
 
 	uint colums;
 	uint rows;

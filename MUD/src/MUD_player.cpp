@@ -38,6 +38,7 @@ void Player::createPacket(PLAYER_PACKET& packet)
 	packet.position.x = this->rect.cx;
 	packet.position.y = this->rect.cy;
 	packet.id = this->id;
+	packet.time = time(0);
 	packet.stillPlaying = 1;
 	this->lastPacket = packet;
 }

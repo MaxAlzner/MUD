@@ -11,16 +11,10 @@ void OnStart()
 	if (!AppRunning) return;
 
 	HANDLE updateThread = CreateThread(NULL, 0, UpdateThread, NULL, 0, NULL);
-	//HANDLE networkThread = CreateThread(NULL, 0, NetworkPollThread, NULL, 0, NULL);
-	//HANDLE sendThread = CreateThread(0, 0, NetworkSendThread, 0, 0, 0);
-	//HANDLE receiveThread = CreateThread(0, 0, NetworkReceiveThread, 0, 0, 0);
 	
 	glutTimerFunc(FRAMES_PER_SECOND, FrameTimer, 0);
 	glutMainLoop();
 	
-	//TerminateThread(receiveThread, 0);
-	//TerminateThread(sendThread, 0);
-	//TerminateThread(networkThread, 0);
 	TerminateThread(updateThread, 0);
 }
 void OnInitialize(int argc, char **argv)
