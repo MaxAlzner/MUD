@@ -193,6 +193,21 @@ void OnFrame()
 
 	Local->draw();
 
+	for (uint i = 0; i < LocalBullets.length(); i++)
+	{
+		Bullet* bullet = LocalBullets[i];
+		if (bullet == NULL) continue;
+
+		bullet->draw();
+	}
+	for (uint i = 0; i < OtherBullets.length(); i++)
+	{
+		Bullet* bullet = OtherBullets[i];
+		if (bullet == NULL) continue;
+
+		bullet->draw();
+	}
+
     glutSwapBuffers();
     glutPostRedisplay();
 	glutTimerFunc(FRAMES_PER_SECOND, FrameTimer, 0);
@@ -207,17 +222,55 @@ void OnUpdate()
 
 	int dx = 0;
 	int dy = 0;
-	if (MALib::INPUT::GetKey(MALib::KEY_LEFT) || MALib::INPUT::GetKey('a')) dx -= 4;
-	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT) || MALib::INPUT::GetKey('d')) dx += 4;
-	if (MALib::INPUT::GetKey(MALib::KEY_UP) || MALib::INPUT::GetKey('w')) dy += 4;
-	if (MALib::INPUT::GetKey(MALib::KEY_DOWN) || MALib::INPUT::GetKey('s')) dy -= 4;
+	if (MALib::INPUT::GetKey(MALib::KEY_LEFT) || MALib::INPUT::GetKey('a')) dx -= 1;
+	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT) || MALib::INPUT::GetKey('d')) dx += 1;
+	if (MALib::INPUT::GetKey(MALib::KEY_UP) || MALib::INPUT::GetKey('w')) dy += 1;
+	if (MALib::INPUT::GetKey(MALib::KEY_DOWN) || MALib::INPUT::GetKey('s')) dy -= 1;
 
-	Local->rect.move(Local->rect.cx + dx, Local->rect.cy + dy);
+	for (uint i = 0; i < LocalBullets.length(); i++)
+	{
+		Bullet* bullet = LocalBullets[i];
+		if (bullet == NULL) continue;
+
+		bullet->update();
+	}
+	for (uint i = 0; i < OtherBullets.length(); i++)
+	{
+		Bullet* bullet = OtherBullets[i];
+		if (bullet == NULL) continue;
+
+		bullet->update();
+	}
+
+	Local->rect.move(Local->rect.cx + (dx * 4), Local->rect.cy + (dy * 4));
+	if (dx != 0 || dy != 0) Local->forward = MALib::POINT(dx, dy);
 	ScreenRect.move(Local->rect.cx, Local->rect.cy);
 
 	Local->update();
+
+	if (MALib::INPUT::GetKey(MALib::KEY_SPACE, true)) Local->fire();
 	
+	CleanUp();
 	if (MALib::INPUT::GetKey(MALib::KEY_ESCAPE)) AppRunning = false;
+}
+
+void Destroy(Bullet* bullet)
+{
+	BulletsToRemove.add(bullet);
+	LocalBullets.remove(bullet);
+}
+void CleanUp()
+{
+#if 0
+	for (uint i = 0; i < BulletsToRemove.length(); i++)
+	{
+		Bullet* bullet = BulletsToRemove[i];
+		if (bullet == NULL) continue;
+
+		delete bullet;
+	}
+#endif
+	BulletsToRemove.zero();
 }
 
 #endif

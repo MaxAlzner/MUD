@@ -26,9 +26,9 @@
 #define FRAMES_PER_SECOND 16u
 #define PLAYER_TIMEOUT 30u
 
-//#include "MUD_input.h"
 #include "MUD_network.h"
 #include "MUD_dungeon.h"
+#include "MUD_bullet.h"
 #include "MUD_player.h"
 #include "MUD_draw.h"
 #include "MUD_def.h"

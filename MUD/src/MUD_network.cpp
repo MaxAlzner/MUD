@@ -31,6 +31,7 @@ void BuildState(GAME_PACKET& state)
 	if (state.players._2.id == 2) state.connected++;
 	if (state.players._3.id == 3) state.connected++;
 	if (state.players._4.id == 4) state.connected++;
+	state.bullets = LocalBullets.length();
 }
 bool ValidateState(GAME_PACKET& state)
 {

@@ -23,6 +23,10 @@ bool HostingGame = false;
 bool Subscribed = false;
 bool AssignUser = false;
 
+MALib::ARRAY<Bullet*> LocalBullets;
+MALib::ARRAY<Bullet*> OtherBullets;
+MALib::ARRAY<Bullet*> BulletsToRemove;
+
 uint ShaderProgram = 0;
 uint SpriteBuffer = 0;
 

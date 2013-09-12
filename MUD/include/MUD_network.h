@@ -42,12 +42,39 @@ typedef struct PLAYER_PACKET
 		__int32 x;
 		__int32 y;
 	} position;
+	struct
+	{
+		__int8 x;
+		__int8 y;
+	} forward;
 
 	__int32 id;
 	__int32 time;
 	__int8 stillPlaying;
 	
 } PLAYER_PACKET;
+typedef struct BULLET_PACKET
+{
+	BULLET_PACKET()
+	{
+		memset(this, 0, sizeof(BULLET_PACKET));
+	}
+	
+	struct
+	{
+		__int32 x;
+		__int32 y;
+	} position, start;
+	struct
+	{
+		__int8 x;
+		__int8 y;
+	} forward;
+
+	__int32 id;
+	__int32 firer;
+
+} BULLET_PACKET;
 typedef struct GAME_PACKET
 {
 	GAME_PACKET()
@@ -64,6 +91,7 @@ typedef struct GAME_PACKET
  	} players;
 
 	__int32 connected;
+	__int32 bullets;
 
 } GAME_PACKET;
 

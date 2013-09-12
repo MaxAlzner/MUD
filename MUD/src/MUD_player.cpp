@@ -5,11 +5,13 @@
 Player::Player()
 {
 	memset(this, 0, sizeof(Player));
+	this->forward = MALib::POINT(0, 1);
 	this->rect.resize(80, 80);
 	this->color = MALib::COLOR(1.0f, 0.25f, 0.1f);
 }
 Player::~Player()
 {
+	memset(this, 0, sizeof(Player));
 }
 
 void Player::update()
@@ -32,11 +34,23 @@ void Player::draw()
 {
 	DrawCircle(this->rect.cx, this->rect.cy, this->rect.width / 2, this->color);
 }
+void Player::fire()
+{
+	Bullet* bullet = new Bullet;
+	bullet->firer = this;
+	bullet->rect.move(this->rect.cx + (this->forward.x * (this->rect.width / 2)), this->rect.cy + (this->forward.y * (this->rect.height / 2)));
+	bullet->start.x = bullet->rect.cx;
+	bullet->start.y = bullet->rect.cy;
+	bullet->forward = this->forward;
+	LocalBullets.add(bullet);
+}
 
 void Player::createPacket(PLAYER_PACKET& packet)
 {
 	packet.position.x = this->rect.cx;
 	packet.position.y = this->rect.cy;
+	packet.forward.x = this->forward.x;
+	packet.forward.y = this->forward.y;
 	packet.id = this->id;
 	packet.time = time(0);
 	packet.stillPlaying = 1;
@@ -44,8 +58,9 @@ void Player::createPacket(PLAYER_PACKET& packet)
 }
 void Player::applyPacket(PLAYER_PACKET& packet)
 {
-	this->rect.cx = packet.position.x;
-	this->rect.cy = packet.position.y;
+	this->rect.move(packet.position.x, packet.position.y);
+	this->forward.x = packet.forward.x;
+	this->forward.y = packet.forward.y;
 	this->lastPacket = packet;
 }
 

@@ -108,6 +108,10 @@ void OnInitialize(int argc, char **argv)
 	Local = new Player;
 	Connected.resize(MAX_CLIENTS);
 
+	OtherBullets.resize(32);
+	LocalBullets.resize(32);
+	BulletsToRemove.resize(8);
+
 	atexit(OnUninitialize);
 }
 void OnUninitialize()

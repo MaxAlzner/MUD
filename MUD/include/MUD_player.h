@@ -9,11 +9,13 @@ public:
 
 	void update();
 	void draw();
+	void fire();
 
 	void createPacket(PLAYER_PACKET& packet);
 	void applyPacket(PLAYER_PACKET& packet);
 
 	uint id;
+	MALib::POINT forward;
 	MALib::RECT rect;
 	MALib::COLOR color;
 

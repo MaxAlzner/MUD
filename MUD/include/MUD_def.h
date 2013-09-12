@@ -24,6 +24,10 @@ extern bool HostingGame;
 extern bool Subscribed;
 extern bool AssignUser;
 
+extern MALib::ARRAY<Bullet*> LocalBullets;
+extern MALib::ARRAY<Bullet*> OtherBullets;
+extern MALib::ARRAY<Bullet*> BulletsToRemove;
+
 extern uint ShaderProgram;
 extern uint SpriteBuffer;
 
