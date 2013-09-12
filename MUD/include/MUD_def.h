@@ -23,10 +23,10 @@ extern string IPAddress;
 extern bool HostingGame;
 extern bool Subscribed;
 extern bool AssignUser;
+extern bool StartedPlaying;
 
-extern MALib::ARRAY<Bullet*> LocalBullets;
-extern MALib::ARRAY<Bullet*> OtherBullets;
-extern MALib::ARRAY<Bullet*> BulletsToRemove;
+extern MALib::ARRAY<Bullet> LocalBullets;
+extern MALib::ARRAY<Bullet> OtherBullets;
 
 extern uint ShaderProgram;
 extern uint SpriteBuffer;

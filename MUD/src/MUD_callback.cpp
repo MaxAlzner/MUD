@@ -167,9 +167,12 @@ void OnHostInitialize()
 	Map->rebuild(MAP_WIDTH, MAP_HEIGHT);
 	Local->id = 1;
 	Local->rect.move((MAP_WIDTH / 2) * MAP_CELLSIZE, (MAP_HEIGHT / 2) * MAP_CELLSIZE);
+	StartedPlaying = true;
 }
 void OnClientInitialize()
 {
+	Subscribed = true;
+	StartedPlaying = true;
 }
 void OnFrame()
 {
@@ -180,7 +183,35 @@ void OnFrame()
 
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	if (StartedPlaying)
+	{
+		DrawGame();
+	}
 
+    glutSwapBuffers();
+    glutPostRedisplay();
+	glutTimerFunc(FRAMES_PER_SECOND, FrameTimer, 0);
+	UpdateFrameCount();
+}
+void OnUpdate()
+{
+	OnNetworkCullPlayers();
+	
+	Theta += 1.0f;
+	if (Theta >= 360.0f) Theta = 0.0f;
+	
+	if (StartedPlaying)
+	{
+		UpdateLocal();
+	}
+	
+	CleanUp();
+	if (MALib::INPUT::GetKey(MALib::KEY_ESCAPE)) AppRunning = false;
+}
+
+void DrawGame()
+{
 	Map->draw();
 	
 	for (uint i = 0; i < Connected.length(); i++)
@@ -195,69 +226,67 @@ void OnFrame()
 
 	for (uint i = 0; i < LocalBullets.length(); i++)
 	{
-		Bullet* bullet = LocalBullets[i];
+		Bullet* bullet = &LocalBullets[i];
 		if (bullet == NULL) continue;
 
 		bullet->draw();
 	}
 	for (uint i = 0; i < OtherBullets.length(); i++)
 	{
-		Bullet* bullet = OtherBullets[i];
+		Bullet* bullet = &OtherBullets[i];
 		if (bullet == NULL) continue;
 
 		bullet->draw();
 	}
-
-    glutSwapBuffers();
-    glutPostRedisplay();
-	glutTimerFunc(FRAMES_PER_SECOND, FrameTimer, 0);
-	UpdateFrameCount();
 }
-void OnUpdate()
+void UpdateLocal()
 {
-	OnNetworkCullPlayers();
-	
-	Theta += 1.0f;
-	if (Theta >= 360.0f) Theta = 0.0f;
-
 	int dx = 0;
 	int dy = 0;
-	if (MALib::INPUT::GetKey(MALib::KEY_LEFT) || MALib::INPUT::GetKey('a')) dx -= 1;
-	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT) || MALib::INPUT::GetKey('d')) dx += 1;
-	if (MALib::INPUT::GetKey(MALib::KEY_UP) || MALib::INPUT::GetKey('w')) dy += 1;
-	if (MALib::INPUT::GetKey(MALib::KEY_DOWN) || MALib::INPUT::GetKey('s')) dy -= 1;
+	if (MALib::INPUT::GetKey('a')) dx -= 1;
+	if (MALib::INPUT::GetKey('d')) dx += 1;
+	if (MALib::INPUT::GetKey('w')) dy += 1;
+	if (MALib::INPUT::GetKey('s')) dy -= 1;
+	
+	Local->rect.move(Local->rect.cx + (dx * 4), Local->rect.cy + (dy * 4));
+	
+	dx = 0;
+	dy = 0;
+	if (MALib::INPUT::GetKey(MALib::KEY_LEFT, true)) dx -= 1;
+	if (MALib::INPUT::GetKey(MALib::KEY_RIGHT, true)) dx += 1;
+	if (MALib::INPUT::GetKey(MALib::KEY_UP, true)) dy += 1;
+	if (MALib::INPUT::GetKey(MALib::KEY_DOWN, true)) dy -= 1;
+	
+	if (dx != 0 || dy != 0)
+	{
+		Local->forward = MALib::POINT(dx, dy);
+		Local->fire(dx, dy);
+	}
 
 	for (uint i = 0; i < LocalBullets.length(); i++)
 	{
-		Bullet* bullet = LocalBullets[i];
+		Bullet* bullet = &LocalBullets[i];
 		if (bullet == NULL) continue;
 
 		bullet->update();
 	}
 	for (uint i = 0; i < OtherBullets.length(); i++)
 	{
-		Bullet* bullet = OtherBullets[i];
+		Bullet* bullet = &OtherBullets[i];
 		if (bullet == NULL) continue;
 
 		bullet->update();
 	}
 
-	Local->rect.move(Local->rect.cx + (dx * 4), Local->rect.cy + (dy * 4));
-	if (dx != 0 || dy != 0) Local->forward = MALib::POINT(dx, dy);
 	ScreenRect.move(Local->rect.cx, Local->rect.cy);
 
 	Local->update();
-
-	if (MALib::INPUT::GetKey(MALib::KEY_SPACE, true)) Local->fire();
-	
-	CleanUp();
-	if (MALib::INPUT::GetKey(MALib::KEY_ESCAPE)) AppRunning = false;
 }
 
 void Destroy(Bullet* bullet)
 {
-	BulletsToRemove.add(bullet);
-	LocalBullets.remove(bullet);
+	LocalBullets.remove(*bullet);
+	OtherBullets.remove(*bullet);
 }
 void CleanUp()
 {
@@ -269,8 +298,8 @@ void CleanUp()
 
 		delete bullet;
 	}
-#endif
 	BulletsToRemove.zero();
+#endif
 }
 
 #endif

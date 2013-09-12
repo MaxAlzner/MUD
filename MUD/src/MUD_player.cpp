@@ -34,14 +34,15 @@ void Player::draw()
 {
 	DrawCircle(this->rect.cx, this->rect.cy, this->rect.width / 2, this->color);
 }
-void Player::fire()
+void Player::fire(int dx, int dy)
 {
-	Bullet* bullet = new Bullet;
-	bullet->firer = this;
-	bullet->rect.move(this->rect.cx + (this->forward.x * (this->rect.width / 2)), this->rect.cy + (this->forward.y * (this->rect.height / 2)));
-	bullet->start.x = bullet->rect.cx;
-	bullet->start.y = bullet->rect.cy;
-	bullet->forward = this->forward;
+	Bullet bullet;
+	bullet.id = this->id;
+	bullet.rect.move(this->rect.cx + (this->forward.x * (this->rect.width / 2)), this->rect.cy + (this->forward.y * (this->rect.height / 2)));
+	bullet.start.x = bullet.rect.cx;
+	bullet.start.y = bullet.rect.cy;
+	bullet.forward.x = dx;
+	bullet.forward.y = dy;
 	LocalBullets.add(bullet);
 }
 

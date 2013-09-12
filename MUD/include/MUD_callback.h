@@ -22,6 +22,9 @@ extern void OnClientInitialize();
 extern void OnFrame();
 extern void OnUpdate();
 
+extern void DrawGame();
+extern void UpdateLocal();
+
 extern void Destroy(Bullet* bullet);
 extern void CleanUp();
 

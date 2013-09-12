@@ -51,6 +51,7 @@ typedef struct PLAYER_PACKET
 	__int32 id;
 	__int32 time;
 	__int8 stillPlaying;
+	__int32 bulletsFired;
 	
 } PLAYER_PACKET;
 typedef struct BULLET_PACKET
@@ -72,7 +73,6 @@ typedef struct BULLET_PACKET
 	} forward;
 
 	__int32 id;
-	__int32 firer;
 
 } BULLET_PACKET;
 typedef struct GAME_PACKET

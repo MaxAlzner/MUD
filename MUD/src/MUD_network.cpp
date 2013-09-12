@@ -60,8 +60,15 @@ void ChooseGameType()
 
 		if (input == 0 || input > 2) continue;
 
-		if (input == 1) HostingGame = true;
-		else HostingGame = false;
+		if (input == 1)
+		{
+			HostingGame = true;
+		}
+		else
+		{
+			HostingGame = false;
+			IPAddress = new char[64];
+		}
 		break;
 	}
 }
@@ -73,14 +80,16 @@ void Connect()
 		if (HostingGame)
 		{
 			IPAddress = MALib::SOCK_GetMyIP();
+			Port = 20533;
 		}
 		else
 		{
-			IPAddress = new char[64];
+			memset(IPAddress, 0, sizeof(char) * 64);
 			printf("  IP Address : ");
 			scanf("%s", IPAddress);
 			fflush(stdin);
 			printf("\n");
+			Port = 20533;
 		}
 
 		if (!MALib::SOCK_Connect(Port, IPAddress, OnNetworkCallbackSend, OnNetworkCallbackReceive))
@@ -98,9 +107,12 @@ void Connect()
 		}
 		else
 		{
-			OnClientInitialize();
-			printf("  Connected to host\n");
+			printf("  Starting host communication\n");
 		}
+
+		printf("  IP Handle : %d\n", MALib::SOCK_GetAddressHandle());
+		printf("  Port Handle : %d\n", MALib::SOCK_GetPortHandle());
+
 		printf("\n");
 
 		break;
@@ -138,7 +150,7 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 			Player* player = new Player;
 			player->id = AcceptedClients + 1;
 			Connected.add(player);
-			printf("  Player connected : %d\n", player->id);
+			printf("  Player %d connected\n", player->id);
 			
 			START_PACKET connected;
 			connected.id = player->id;
@@ -148,34 +160,65 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 			buffer += sizeof(__int32);
 			*((START_PACKET*)buffer) = connected;
 			buffer += sizeof(START_PACKET);
-			Map->fillWallBuffer((__int32*)buffer, bytes);
+			uint count = Map->fillWallBuffer((__int32*)buffer, bytes);
 		}
 		else
 		{
 			*(__int32*)buffer = (__int32)PACKET_TYPE_MASS_UPDATE;
 			buffer += sizeof(__int32);
-			*((GAME_PACKET*)buffer) = StatePacket;
+
+			GAME_PACKET state = StatePacket;
+			state.bullets = LocalBullets.length() + OtherBullets.length();
+			*((GAME_PACKET*)buffer) = state;
+			buffer += sizeof(GAME_PACKET);
+
+			for (uint i = 0; i < LocalBullets.length(); i++)
+			{
+				BULLET_PACKET packet;
+				LocalBullets[i].createPacket(packet);
+				*((BULLET_PACKET*)buffer) = packet;
+				buffer += sizeof(BULLET_PACKET);
+			}
+			for (uint i = 0; i < OtherBullets.length(); i++)
+			{
+				BULLET_PACKET packet;
+				OtherBullets[i].createPacket(packet);
+				*((BULLET_PACKET*)buffer) = packet;
+				buffer += sizeof(BULLET_PACKET);
+			}
 		}
 	}
 	else
 	{
 		if (!Subscribed)
 		{
-			Subscribed = true;
 			*(__int32*)buffer = (__int32)PACKET_TYPE_SUBSCRIBE;
 			buffer += sizeof(__int32);
+			Subscribed = true;
 		}
 		else
 		{
 			*(__int32*)buffer = (__int32)PACKET_TYPE_PUSH_UPDATE;
 			buffer += sizeof(__int32);
+
 			PLAYER_PACKET local;
 			Local->createPacket(local);
+			local.bulletsFired = LocalBullets.length();
 			*((PLAYER_PACKET*)buffer) = local;
+			buffer += sizeof(PLAYER_PACKET);
+
+			for (uint i = 0; i < LocalBullets.length(); i++)
+			{
+				BULLET_PACKET packet;
+				LocalBullets[i].createPacket(packet);
+				packet.id = Local->id;
+				*((BULLET_PACKET*)buffer) = packet;
+				buffer += sizeof(BULLET_PACKET);
+			}
 		}
 	}
 
-	return 33;
+	return 100;
 }
 int OnNetworkCallbackReceive(char* buffer, uint bytes)
 {
@@ -183,6 +226,7 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 	buffer += sizeof(__int32);
 	if      (type == PACKET_TYPE_SUBSCRIBE && HostingGame)
 	{
+		printf("  Found player\n");
 		AssignUser = true;
 	}
 	else if (type == PACKET_TYPE_ASSIGN_USER && !HostingGame)
@@ -203,6 +247,7 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 	else if (type == PACKET_TYPE_PUSH_UPDATE && HostingGame)
 	{
 		PLAYER_PACKET packet = *((PLAYER_PACKET*)buffer);
+		buffer += sizeof(PLAYER_PACKET);
 
 		GAME_PACKET state = StatePacket;
 		AddToState(state, packet);
@@ -218,10 +263,30 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 		AddToState(state, local);
 		BuildState(state);
 		if (ValidateState(state)) StatePacket = state;
+
+		if (packet.bulletsFired > 0)
+		{
+			for (uint i = 0; i < OtherBullets.length(); i++)
+			{
+				Bullet* bullet = &OtherBullets[i];
+				if (bullet->id == packet.id || bullet->id == 0) OtherBullets.remove(*bullet);
+			}
+			for (uint i = 0; i < packet.bulletsFired; i++)
+			{
+				BULLET_PACKET bullet = *((BULLET_PACKET*)buffer);
+				buffer += sizeof(BULLET_PACKET);
+				if (bullet.id == 0 || bullet.id == Local->id) continue;
+
+				Bullet newBullet;
+				newBullet.applyPacket(bullet);
+				OtherBullets.add(newBullet);
+			}
+		}
 	}
 	else if (type == PACKET_TYPE_MASS_UPDATE && !HostingGame)
 	{
 		GAME_PACKET state = *((GAME_PACKET*)buffer);
+		buffer += sizeof(GAME_PACKET);
 		
 		if (ValidateState(state))
 		{
@@ -244,9 +309,25 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 				k++;
 			}
 		}
+
+		if (state.bullets > 0)
+		{
+			printf("  RECEIVING BULLETS %d\n", state.bullets);
+			OtherBullets.zero();
+			for (uint i = 0; i < state.bullets; i++)
+			{
+				BULLET_PACKET bullet = *((BULLET_PACKET*)buffer);
+				buffer += sizeof(BULLET_PACKET);
+				if (bullet.id == 0 || bullet.id == Local->id) continue;
+
+				Bullet newBullet;
+				newBullet.applyPacket(bullet);
+				OtherBullets.add(newBullet);
+			}
+		}
 	}
 
-	return 33;
+	return 100;
 }
 
 #endif

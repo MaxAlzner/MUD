@@ -9,7 +9,7 @@ public:
 
 	void update();
 	void draw();
-	void fire();
+	void fire(int dx, int dy);
 
 	void createPacket(PLAYER_PACKET& packet);
 	void applyPacket(PLAYER_PACKET& packet);

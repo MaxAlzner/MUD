@@ -17,15 +17,16 @@ Player* Local = NULL;
 MALib::ARRAY<Player*> Connected;
 GAME_PACKET StatePacket;
 
-uint Port = 20533;
+uint Port;
 string IPAddress = 0;
 bool HostingGame = false;
 bool Subscribed = false;
 bool AssignUser = false;
+bool StartedPlaying = false;
 
-MALib::ARRAY<Bullet*> LocalBullets;
-MALib::ARRAY<Bullet*> OtherBullets;
-MALib::ARRAY<Bullet*> BulletsToRemove;
+MALib::ARRAY<Bullet> LocalBullets;
+MALib::ARRAY<Bullet> OtherBullets;
+//MALib::ARRAY<Bullet*> BulletsToRemove;
 
 uint ShaderProgram = 0;
 uint SpriteBuffer = 0;

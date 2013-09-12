@@ -110,7 +110,6 @@ void OnInitialize(int argc, char **argv)
 
 	OtherBullets.resize(32);
 	LocalBullets.resize(32);
-	BulletsToRemove.resize(8);
 
 	atexit(OnUninitialize);
 }

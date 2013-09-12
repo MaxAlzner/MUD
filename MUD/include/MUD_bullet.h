@@ -11,6 +11,8 @@ public:
 	Bullet();
 	~Bullet();
 
+	bool operator==(const Bullet& other);
+
 	void update();
 	void draw();
 
@@ -22,7 +24,6 @@ public:
 	MALib::POINT start;
 	MALib::RECT rect;
 	MALib::COLOR color;
-	Player* firer;
 	BULLET_PACKET lastPacket;
 };
 
