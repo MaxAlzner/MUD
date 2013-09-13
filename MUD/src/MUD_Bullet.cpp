@@ -51,6 +51,7 @@ void Bullet::createPacket(BULLET_PACKET& packet)
 	packet.position.y = this->rect.cy;
 	packet.forward.x = this->forward.x;
 	packet.forward.y = this->forward.y;
+	packet.id = this->id;
 	this->lastPacket = packet;
 }
 void Bullet::applyPacket(BULLET_PACKET& packet)

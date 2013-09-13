@@ -226,17 +226,15 @@ void DrawGame()
 
 	for (uint i = 0; i < LocalBullets.length(); i++)
 	{
-		Bullet* bullet = &LocalBullets[i];
-		if (bullet == NULL) continue;
+		Bullet bullet = LocalBullets[i];
 
-		bullet->draw();
+		bullet.draw();
 	}
 	for (uint i = 0; i < OtherBullets.length(); i++)
 	{
-		Bullet* bullet = &OtherBullets[i];
-		if (bullet == NULL) continue;
+		Bullet bullet = OtherBullets[i];
 
-		bullet->draw();
+		bullet.draw();
 	}
 }
 void UpdateLocal()
@@ -270,6 +268,7 @@ void UpdateLocal()
 
 		bullet->update();
 	}
+#if 0
 	for (uint i = 0; i < OtherBullets.length(); i++)
 	{
 		Bullet* bullet = &OtherBullets[i];
@@ -277,6 +276,7 @@ void UpdateLocal()
 
 		bullet->update();
 	}
+#endif
 
 	ScreenRect.move(Local->rect.cx, Local->rect.cy);
 
@@ -290,16 +290,6 @@ void Destroy(Bullet* bullet)
 }
 void CleanUp()
 {
-#if 0
-	for (uint i = 0; i < BulletsToRemove.length(); i++)
-	{
-		Bullet* bullet = BulletsToRemove[i];
-		if (bullet == NULL) continue;
-
-		delete bullet;
-	}
-	BulletsToRemove.zero();
-#endif
 }
 
 #endif

@@ -172,6 +172,7 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 			*((GAME_PACKET*)buffer) = state;
 			buffer += sizeof(GAME_PACKET);
 
+#if 1
 			for (uint i = 0; i < LocalBullets.length(); i++)
 			{
 				BULLET_PACKET packet;
@@ -186,6 +187,7 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 				*((BULLET_PACKET*)buffer) = packet;
 				buffer += sizeof(BULLET_PACKET);
 			}
+#endif
 		}
 	}
 	else
@@ -207,14 +209,15 @@ int OnNetworkCallbackSend(char* buffer, uint bytes)
 			*((PLAYER_PACKET*)buffer) = local;
 			buffer += sizeof(PLAYER_PACKET);
 
+#if 1
 			for (uint i = 0; i < LocalBullets.length(); i++)
 			{
 				BULLET_PACKET packet;
 				LocalBullets[i].createPacket(packet);
-				packet.id = Local->id;
 				*((BULLET_PACKET*)buffer) = packet;
 				buffer += sizeof(BULLET_PACKET);
 			}
+#endif
 		}
 	}
 
@@ -264,6 +267,7 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 		BuildState(state);
 		if (ValidateState(state)) StatePacket = state;
 
+#if 1
 		if (packet.bulletsFired > 0)
 		{
 			for (uint i = 0; i < OtherBullets.length(); i++)
@@ -282,6 +286,7 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 				OtherBullets.add(newBullet);
 			}
 		}
+#endif
 	}
 	else if (type == PACKET_TYPE_MASS_UPDATE && !HostingGame)
 	{
@@ -310,9 +315,10 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 			}
 		}
 
+#if 1
 		if (state.bullets > 0)
 		{
-			printf("  RECEIVING BULLETS %d\n", state.bullets);
+			//printf("  RECEIVING BULLETS %d\n", state.bullets);
 			OtherBullets.zero();
 			for (uint i = 0; i < state.bullets; i++)
 			{
@@ -325,6 +331,7 @@ int OnNetworkCallbackReceive(char* buffer, uint bytes)
 				OtherBullets.add(newBullet);
 			}
 		}
+#endif
 	}
 
 	return 100;

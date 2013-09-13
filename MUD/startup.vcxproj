@@ -115,7 +115,7 @@ xcopy "$(SolutionDir)data\*.*" "$(SolutionDir)bin\data\*.*" /E /Y /C</Command>
   <ItemGroup>
     <ClCompile Include="src\EntryPoint.cpp" />
     <ClCompile Include="src\MUD_app.cpp" />
-    <ClCompile Include="src\MUD_Bullet.cpp" />
+    <ClCompile Include="src\MUD_bullet.cpp" />
     <ClCompile Include="src\MUD_callback.cpp" />
     <ClCompile Include="src\MUD_def.cpp" />
     <ClCompile Include="src\MUD_draw.cpp" />
